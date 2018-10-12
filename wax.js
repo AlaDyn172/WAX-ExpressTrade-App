@@ -6,11 +6,12 @@ var cookieParser = require('cookie-parser');
 var opAuth = require('opskins-oauth');
 var request = require('request');
 var mysql = require('mysql');
+var config = require('./config.js');
 var db_config = {
-    host: "localhost",
-    user: "root",
-    password: "wax_internet",
-    database: "wax_db"
+    host: config.host,
+    user: config.user,
+    password: config.password,
+    database: config.database
 };
 var pool;
 var app = express();
