@@ -72,6 +72,11 @@ passport.use('custom', new CustomStrategy(function (req, done) {
         res.redirect(OpskinsAuth.getFetchUrl());
     });
 
+    app.get('/logout', function(req, res) {
+        res.clearCookie("session_id");
+        res.redirect('/');
+    });
+
     app.get('/auth/opskins/authenticate', passport.authenticate('custom', {
         failureRedirect: '/'
     }), function (req, res) {
