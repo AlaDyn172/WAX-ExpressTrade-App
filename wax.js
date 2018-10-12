@@ -111,7 +111,7 @@ app.get('/user/:2facode/:trade_msg/make_trade/:ids/:trade_user', function(req, r
     var items = decodeURIComponent(req.params.ids);
     var trade_user = decodeURIComponent(req.params.trade_user);
 
-    makeTradeWith(req.user.access_token, items, _2facode, trade_msg, trade_user, function(err, msg) {
+    makeTradeWith(req.user.access_token, items, _2facode, trade_msg, trade_user, res, function(err, msg) {
         if(err) {
             res.json({
                 success: false,
@@ -129,7 +129,7 @@ app.get('/user/:2facode/:trade_msg/make_trade/:ids/:trade_user', function(req, r
 app.get('/user/get_trade/:id', function(req, res) {
     var trade_id = req.params.id;
 
-    getTradeInformations(req.user.access_token, trade_id, function(err, msg) {
+    getTradeInformations(req.user.access_token, trade_id, res, function(err, msg) {
         if(err) {
             res.json({
                 success: false,
@@ -162,7 +162,7 @@ app.get('/user/accept_trade/:tid/:2fa', function(req, res) {
     var tid = req.params.tid;
     var _2fa = req.params['2fa'];
 
-    setTrade('accept', tid, _2fa, req.user.access_token, function(err, msg) {
+    setTrade('accept', tid, _2fa, req.user.access_token, res, function(err, msg) {
         if(err) {
             res.json({
                 success: false,
@@ -179,7 +179,7 @@ app.get('/user/accept_trade/:tid/:2fa', function(req, res) {
 app.get('/user/decline_trade/:tid', function(req, res) {
     var tid = req.params.tid;
 
-    setTrade('decline', tid, '', req.user.access_token, function(err, msg) {
+    setTrade('decline', tid, '', req.user.access_token, res, function(err, msg) {
         if(err) {
             res.json({
                 success: false,
@@ -198,7 +198,7 @@ app.get('/user/decline_trade/:tid', function(req, res) {
 app.get('/user/inventory_change/:appid', function(req, res) {
     var appid = req.params.appid;
 
-    changeInventoryGame(appid, req.user.access_token, function(err, inv) {
+    changeInventoryGame(appid, req.user.access_token, res, function(err, inv) {
         if(err) {
             res.json({
                 success: false,
@@ -215,7 +215,7 @@ app.get('/user/inventory_change/:appid', function(req, res) {
 
 
 app.get('/user/received_offers', function(req, res) {
-    getReceivedOffers(req.user.access_token, function(err, msg) {
+    getReceivedOffers(req.user.access_token, res, function(err, msg) {
         if(err) {
             res.json({
                 success: false,
@@ -231,7 +231,7 @@ app.get('/user/received_offers', function(req, res) {
 });
 
 app.get('/user/sent_offers', function(req, res) {
-    getSentOffers(req.user.access_token, function(err, msg) {
+    getSentOffers(req.user.access_token, res, function(err, msg) {
         if(err) {
             res.json({
                 success: false,
@@ -250,7 +250,7 @@ app.get('/user/change_game/:appid/:trade_user', function(req, res) {
     var appid = req.params.appid;
     var trade_user = req.params['trade_user'];
 
-    changeGame(req.user.access_token, appid, trade_user, function(err, msg, _inv1, _inv2) {
+    changeGame(req.user.access_token, appid, trade_user, res, function(err, msg, _inv1, _inv2) {
         if(err) {
             res.json({
                 success: false,
@@ -270,7 +270,7 @@ app.get('/user/change_game/:appid/:trade_user', function(req, res) {
 app.get('/user/items_to_opskins/:items', function(req, res) {
     var items = decodeURIComponent(req.params.items);
 
-    withdrawItemsToOpSkins(items, req.user.access_token, function(err, msg) {
+    withdrawItemsToOpSkins(items, req.user.access_token, res, function(err, msg) {
         if(err) {
             res.json({
                 success: false,
@@ -287,7 +287,7 @@ app.get('/user/items_to_opskins/:items', function(req, res) {
 app.get('/user/trade/:link', function(req, res) {
     var trade = decodeURIComponent(req.params.link);
 
-    getContentTrade(req.user.access_token, trade, function(err, user, items) {
+    getContentTrade(req.user.access_token, trade, res, function(err, user, items) {
         if(err) {
             res.json({
                 success: false,
@@ -335,7 +335,7 @@ app.use(express.static(__dirname + '/public'));
 app.listen(80);
 console.log('WAX ExpressTrade application is now running on port :80!');
 
-function getContentTrade(access_token, trade, cb) {
+function getContentTrade(access_token, trade, res, cb) {
     if(trade.includes('https://trade.opskins.com') || trade.includes('http://trade.opskins.com')) {
        
         var userid = trade.split('/')[4];
@@ -345,6 +345,8 @@ function getContentTrade(access_token, trade, cb) {
 
             var utilizator = resp.response.user_data;
             var items = resp.response.items;
+
+            if(resp.error == 'invalid_token') return res.redirect(OpskinsAuth.getFetchUrl());
 
             cb(0, utilizator, items);
         });
@@ -358,6 +360,8 @@ function getContentTrade(access_token, trade, cb) {
             var utilizator = resp.response.user_data;
             var items = resp.response.items;
 
+            if(resp.error == 'invalid_token') return res.redirect(OpskinsAuth.getFetchUrl());
+
             cb(0, utilizator, items);
         });
     } else {
@@ -369,12 +373,14 @@ function getContentTrade(access_token, trade, cb) {
             var utilizator = resp.response.user_data;
             var items = resp.response.items;
 
+            if(resp.error == 'invalid_token') return res.redirect(OpskinsAuth.getFetchUrl());
+
             cb(0, utilizator, items);
         });
     }
 }
 
-function makeTradeWith(access_token, items, fac, trade_msg, trade_user, cb) {
+function makeTradeWith(access_token, items, fac, trade_msg, trade_user, res, cb) {
     var trade = trade_user;
 
     if(trade.includes('https://trade.opskins.com') || trade.includes('http://trade.opskins.com')) {
@@ -389,6 +395,8 @@ function makeTradeWith(access_token, items, fac, trade_msg, trade_user, cb) {
             message: trade_msg
         }, access_token, function(resp) {
             if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
+
+            if(resp.error == 'invalid_token') return res.redirect(OpskinsAuth.getFetchUrl());
 
             if(resp.response.offer.state == 2) cb(0, 'Trade successfully sent to user ' + resp.response.offer.recipient.display_name);
             else cb(1, 'An error occurred while sending offer!');
@@ -406,6 +414,8 @@ function makeTradeWith(access_token, items, fac, trade_msg, trade_user, cb) {
         }, access_token, function(resp) {
             if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
 
+            if(resp.error == 'invalid_token') return res.redirect(OpskinsAuth.getFetchUrl());
+
             if(resp.response.offer.state == 2) cb(0, 'Trade successfully sent to user ' + resp.response.offer.recipient.display_name);
             else cb(1, 'An error occurred while sending offer!');
         });
@@ -420,13 +430,15 @@ function makeTradeWith(access_token, items, fac, trade_msg, trade_user, cb) {
         }, access_token, function(resp) {
             if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
 
+            if(resp.error == 'invalid_token') return res.redirect(OpskinsAuth.getFetchUrl());
+
             if(resp.response.offer.state == 2) cb(0, 'Trade successfully sent to user ' + resp.response.offer.recipient.display_name);
             else cb(1, 'An error occurred while sending offer!');
         });
     }
 }
 
-function getReceivedOffers(access_token, cb) {
+function getReceivedOffers(access_token, res, cb) {
     requ('https://api-trade.opskins.com/ITrade/GetOffers/v1/?type=received', 'GET', {}, access_token, function(resp) {
         if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
 
@@ -448,11 +460,13 @@ function getReceivedOffers(access_token, cb) {
             });
         }
 
+        if(resp.error == 'invalid_token') return res.redirect(OpskinsAuth.getFetchUrl());
+
         cb(0, received_offers);
     });
 }
 
-function getSentOffers(access_token, cb) {
+function getSentOffers(access_token, res, cb) {
     requ('https://api-trade.opskins.com/ITrade/GetOffers/v1/?type=sent', 'GET', {}, access_token, function(resp) {
         if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
 
@@ -474,19 +488,25 @@ function getSentOffers(access_token, cb) {
             });
         }
 
+        if(resp.error == 'invalid_token') return res.redirect(OpskinsAuth.getFetchUrl());
+
         cb(0, sent_offers);
     });
 }
 
 
-function changeGame(access_token, appid, trade_user, cb) {
+function changeGame(access_token, appid, trade_user, res, cb) {
     requ('https://api-trade.opskins.com/ITrade/GetUserInventory/v1/?uid=' + trade_user + '&app_id=' + parseInt(appid) + '&page=1&per_page=500', 'GET', {}, access_token, function(resp) {
         if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
+
+        if(resp.error == 'invalid_token') return res.redirect(OpskinsAuth.getFetchUrl());
 
         var items_player_2 = resp.response.items;
 
         requ('https://api-trade.opskins.com/IUser/GetInventory/v1/?app_id=' + parseInt(appid) + '&page=1&per_page=500', 'GET', {}, access_token, function(respu) {
             if(respu.hasOwnProperty('message') && !respu.hasOwnProperty('response')) return cb(1, respu.message);
+
+            if(resp.error == 'invalid_token') return res.redirect(OpskinsAuth.getFetchUrl());
 
             var items_player_1 = respu.response.items;
 
@@ -497,9 +517,11 @@ function changeGame(access_token, appid, trade_user, cb) {
 
 
 
-function getTradeInformations(access_token, trade_offer, cb) {
+function getTradeInformations(access_token, trade_offer, res, cb) {
     requ('https://api-trade.opskins.com/ITrade/GetOffer/v1/?offer_id=' + trade_offer, 'GET', {}, access_token, function(resp) {
         if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
+
+        if(resp.error == 'invalid_token') return res.redirect(OpskinsAuth.getFetchUrl());
 
         cb(0, resp.response.offer);
     });
@@ -507,7 +529,7 @@ function getTradeInformations(access_token, trade_offer, cb) {
 
 
 
-function setTrade(type, tid, _2fa, access_token, cb) {
+function setTrade(type, tid, _2fa, access_token, res, cb) {
     var url = "";
     var json = {};
     if(type == 'accept') url = 'https://api-trade.opskins.com/ITrade/AcceptOffer/v1/';
@@ -527,6 +549,8 @@ function setTrade(type, tid, _2fa, access_token, cb) {
     requ(url, 'POST', json, access_token, function(resp) {
         if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
 
+        if(resp.error == 'invalid_token') return res.redirect(OpskinsAuth.getFetchUrl());
+
         if(type == 'accept' && resp.response.offer.state == 3) cb(0);
         else if(type == 'decline' && ( resp.response.offer.state == 7 || resp.response.offer.state == 6)) cb(0);
         else cb(1, 'An error ocurred while accepting/declining the trade!');
@@ -534,20 +558,24 @@ function setTrade(type, tid, _2fa, access_token, cb) {
 }
 
 
-function changeInventoryGame(appid, access_token, cb) {
+function changeInventoryGame(appid, access_token, res, cb) {
     requ('https://api-trade.opskins.com/IUser/GetInventory/v1/?app_id=' + appid, 'GET', {}, access_token, function(resp) {
         if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
+
+        if(resp.error == 'invalid_token') return res.redirect(OpskinsAuth.getFetchUrl());
 
         cb(0, resp.response.items);
     });
 }
 
 
-function withdrawItemsToOpSkins(items, access_token, cb) {
+function withdrawItemsToOpSkins(items, access_token, res, cb) {
     requ('https://api-trade.opskins.com/IItem/WithdrawToOpskins/v1/', 'POST', {
         'item_id': items
     }, access_token, function(resp) {
         if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
+
+        if(resp.error == 'invalid_token') return res.redirect(OpskinsAuth.getFetchUrl());
 
         cb(0);
     });
