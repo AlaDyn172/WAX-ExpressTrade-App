@@ -24,6 +24,10 @@ app.get('/', function(req, res) {
     res.render('pages/index');
 });
 
+app.get('/trade', function(req, res) {
+    res.render('pages/trade');
+});
+
 let sessionMiddleware = session({
     key: 'session_id',
     secret: 'aladyn17200777',
