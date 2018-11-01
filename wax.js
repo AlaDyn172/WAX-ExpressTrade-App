@@ -579,3 +579,5 @@ process.on('uncaughtException', function (err) {
     console.log('[ERROR]');
     console.log(err);
 });
+
+// SCRIPT MADE BY @ALADYN172 [TWITTER]
