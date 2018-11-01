@@ -1,0 +1,350 @@
+body {
+    background-color: #0d1e29;
+    padding-bottom: 10px;
+}
+
+.sidenav {
+    background-color: #0d1e29;
+}
+
+.sidenav li a {
+    color: white !important;
+    font-weight: bold;
+}
+
+.sidenav li a i {
+    color: white !important;
+}
+
+
+nav {
+    color: #fff;
+    background-color: black;
+    width: 100%;
+    height: 56px;
+    line-height: 56px;
+}
+
+.brand-logo {
+    position: inherit;
+    padding: 5px;
+}
+
+.brand-logo img:nth-child(1) {
+    width: 80px;
+}
+
+.brand-logo img:nth-child(2) {
+    width: 250px;
+}
+
+.container {
+    color: white;
+}
+
+.hidden {
+    display: none;
+}
+
+* {
+    color: white;
+}
+
+.profile {
+    display: flex;
+}
+
+.profile .prof img {
+    margin-bottom: -10px;
+    border-radius: 50%;
+}
+
+.container .gameChange img {
+    width: 30px;
+    margin-bottom: -10px;
+}
+
+.dropdown-trigger {
+    display: flex;
+    width: 80px;
+    background-color: #5f5f5f !important;
+    height: 40px;
+    margin: 10px;
+}
+
+.dropdown-trigger img {
+    width: 40px;
+    padding: 2px;
+    height: 40px;
+}
+
+.dropdown-content {
+    background-color: #000;
+    margin: 0;
+    display: none;
+    min-width: 100px;
+    overflow-y: auto;
+    opacity: 0;
+    position: absolute !important;
+    top: 0;
+    z-index: 9999;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+    border-radius: 15px;
+    width: 180px !important;
+    left: 88px !important;
+    margin: 25px auto auto auto !important;
+    height: 219px !important;
+}
+
+.dropdownul {
+    top: 438px !important;
+}
+
+.dropdownul2 {
+    top: 301px !important;
+}
+
+.dropdown-content li:hover {
+    background-color: #1f3f54 !important;
+}
+
+.dropdown-contentul {
+    background-color: #000;
+    margin: 0;
+    display: none;
+    min-width: 100px;
+    overflow-y: auto;
+    opacity: 0;
+    position: absolute !important;
+    top: 0;
+    z-index: 9999;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+    border-radius: 15px;
+    width: 180px !important;
+    left: 88px !important;
+    top: 267px !important;
+
+    margin: 25px auto auto auto !important;
+    height: 219px !important;
+}
+
+.dropdown-contentul li:hover {
+    background-color: #1f3f54 !important;
+}
+
+
+.container h3 {
+    font-weight: bold;
+    color: #66cccc;
+}
+
+.container h5 {
+    padding-bottom: 15px;
+}
+
+.your_inventory {
+    width: 100%;
+    background-color: #173142;
+    height: 200px;
+    border-radius: 10px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.your_inventory .item {
+    background: #2a4a5f;
+    margin: 3px;
+    cursor: pointer;
+    position: relative;
+    vertical-align: top;
+    width: 67px;
+    display: inline-block;
+    height: 80px;
+    transition: .5s ease-in-out all;
+    overflow: hidden;
+    border-radius: 7px;
+}
+
+.your_inventory .item .image img {
+    width: 100%;
+}
+
+.your_inventory .item .name {
+    font-size: 8px;
+    line-height: .5;
+    text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.your_inventory .item .price {
+    position: inherit;
+    margin-top: -18px;
+    font-size: 8px;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 2px;
+    text-align: center;
+}
+
+.his_inventory {
+    width: 100%;
+    background-color: #173142;
+    height: 200px;
+    border-radius: 10px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-top: 10px;
+}
+
+.his_inventory .item {
+    background: #2a4a5f;
+    margin: 3px;
+    cursor: pointer;
+    position: relative;
+    vertical-align: top;
+    width: 67px;
+    display: inline-block;
+    height: 80px;
+    transition: .5s ease-in-out all;
+    overflow: hidden;
+    border-radius: 7px;
+}
+
+.his_inventory .item .image img {
+    width: 100%;
+}
+
+.his_inventory .item .name {
+    font-size: 8px;
+    line-height: .5;
+    text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.his_inventory .item .price {
+    position: inherit;
+    margin-top: -18px;
+    font-size: 8px;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 2px;
+    text-align: center;
+}
+
+.selected {
+    background-color: #1b2a33 !important;
+}
+
+.container .content {
+    margin-top: 20px;
+}
+
+.offers {
+    margin-top: 25px;
+    background-color: #32393e;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.offers .offer {
+    margin-bottom: 15px;
+}
+
+.offers .offer .sender_or_recipient img {
+    width: 33px;
+    border-radius: 50%;
+    margin-bottom: -10px;
+}
+
+.offers .offer .sender_or_recipient span button {
+    border-radius: 50%;
+    padding: 0 8px;
+    margin-left: 6px;
+    line-height: 45px;
+}
+
+
+
+.see_inventory {
+    width: 100%;
+    background-color: #173142;
+    height: 200px;
+    border-radius: 10px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.see_inventory .item {
+    background: #2a4a5f;
+    margin: 3px;
+    cursor: pointer;
+    position: relative;
+    vertical-align: top;
+    width: 67px;
+    display: inline-block;
+    height: 80px;
+    transition: .5s ease-in-out all;
+    overflow: hidden;
+    border-radius: 7px;
+}
+
+.see_inventory .item .image img {
+    width: 100%;
+}
+
+.see_inventory .item .name {
+    font-size: 8px;
+    line-height: .5;
+    text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.see_inventory .item .price {
+    position: inherit;
+    margin-top: -18px;
+    font-size: 8px;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 2px;
+    text-align: center;
+}
+
+.friends .friend {
+    display: inline-grid;
+    padding: 10px;
+}
+
+.friends .friend img {
+    width: 50px;
+    border-radius: 50%;
+}
+
+
+@media(max-width: 700px) {
+    .brand-logo {
+        position: inherit !important;
+        margin-left: -5% !important;
+    }
+
+    .brand-logo img:nth-child(1) {
+        width: 40px !important;
+    }
+
+    .brand-logo img:nth-child(2) {
+        width: 100px !important;
+    }
+
+    .profile .prof img {
+        margin-bottom: -10px;
+        margin-right: 27px;
+        border-radius: 50%;
+    }
+}

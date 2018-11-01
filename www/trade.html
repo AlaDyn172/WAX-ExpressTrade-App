@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>WAX ExpressTrade</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="/css/all.css">
+    <link rel="stylesheet" href="https://www.richardhsu.me/jquery.ambiance/assets/css/jquery.ambiance.css">
+    <link rel="stylesheet" href="/css/app.css?v=250">
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://www.richardhsu.me/jquery.ambiance/assets/js/jquery.ambiance.js"></script>
+    <script src="/js/app.js?v=250"></script>
+</head>
+<body>
+  <nav>
+    <div class="nav-wrapper">
+      <a href="#home" class="brand-logo itemGo" data-go="home">
+	<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMzEiIGhlaWdodD0iNDEiIHZpZXdCb3g9IjAgMCAxMzEgNDEiPgogIDxnIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLS4wMTIgLjk5NikiPgogICAgPHBvbHlnb24gZmlsbD0iI0Y3OEUxRSIgcG9pbnRzPSIxMDkuMzMzIDcuNjc2IDEwMy41MTggMTIuNTM3IDEwOS40ODkgMTcuNTQ3IDEyMS4yNzMgNy42NzYiLz4KICAgIDxwb2x5Z29uIGZpbGw9IiNGRkYiIHBvaW50cz0iNzEuNDA4IDAgOTQuODkzIDE5Ljc5MyA4Ny40NDcgMjYuMDQxIDcyLjAzNyA3LjY3NiA2MiA3LjY3NiAzNS4xMzggMzkuNTk4IDQ1LjE2NCAzOS41OTggNjcuMDE4IDEzLjYzNSA3My4zMjUgMjEuMTUyIDY1LjA5NSAyMS4xNTIgNjAuODk1IDI2LjE1OSA3Ny41MjcgMjYuMTU5IDgyLjM2MiAzMS45MjIgOTIuMzggMzEuOTIyIDkyLjM3OSAzMS45MjEgMTAwLjg2MyAyNC44MDIgMTA5LjM0OSAzMS45MjIgMTIxLjI4NyAzMS45MjIgODMuMzM5IDAiLz4KICAgIDxwYXRoIGZpbGw9IiNGRkYiIGQ9Ik0xMjYuMTY3MzU4LDguNTAxMDI2NDIgTDEyNS4wMDczNTgsOC41MDEwMjY0MiBMMTI1LjAwNzM1OCwxMS42NzYwMjY0IEwxMjQuNTI0ODU4LDExLjY3NjAyNjQgTDEyNC41MjQ4NTgsOC41MDEwMjY0MiBMMTIzLjM2MjM1OCw4LjUwMTAyNjQyIEwxMjMuMzYyMzU4LDguMDkzNTI2NDIgTDEyNi4xNjczNTgsOC4wOTM1MjY0MiBMMTI2LjE2NzM1OCw4LjUwMTAyNjQyIFogTTEzMC40MjQ4NTgsOC4wOTM1MjY0MiBMMTMwLjQyNDg1OCwxMS42NzYwMjY0IEwxMjkuOTk5ODU4LDExLjY3NjAyNjQgTDEyOS45OTk4NTgsOS4wNDM1MjY0MiBDMTI5Ljk5OTg1OCw5LjAwODUyNjI1IDEzMC4wMDExMDgsOC45NzEwMjY2MiAxMzAuMDAzNjA4LDguOTMxMDI2NDIgQzEzMC4wMDYxMDgsOC44OTEwMjYyMiAxMzAuMDA5MDI0LDguODUwMTkzMyAxMzAuMDEyMzU4LDguODA4NTI2NDIgTDEyOC43ODIzNTgsMTEuMDQ4NTI2NCBDMTI4Ljc0NDAyNCwxMS4xMjM1MjY4IDEyOC42ODU2OTEsMTEuMTYxMDI2NCAxMjguNjA3MzU4LDExLjE2MTAyNjQgTDEyOC41MzczNTgsMTEuMTYxMDI2NCBDMTI4LjQ1OTAyNCwxMS4xNjEwMjY0IDEyOC40MDA2OTEsMTEuMTIzNTI2OCAxMjguMzYyMzU4LDExLjA0ODUyNjQgTDEyNy4xMDczNTgsOC43OTg1MjY0MiBDMTI3LjExNzM1OCw4Ljg4Njg2MDIgMTI3LjEyMjM1OCw4Ljk2ODUyNjA1IDEyNy4xMjIzNTgsOS4wNDM1MjY0MiBMMTI3LjEyMjM1OCwxMS42NzYwMjY0IEwxMjYuNjk3MzU4LDExLjY3NjAyNjQgTDEyNi42OTczNTgsOC4wOTM1MjY0MiBMMTI3LjA1NDg1OCw4LjA5MzUyNjQyIEMxMjcuMDk4MTkxLDguMDkzNTI2NDIgMTI3LjEzMTUyNCw4LjA5NzY5MzA1IDEyNy4xNTQ4NTgsOC4xMDYwMjY0MiBDMTI3LjE3ODE5MSw4LjExNDM1OTggMTI3LjIwMDY5MSw4LjEzNzY5MjkgMTI3LjIyMjM1OCw4LjE3NjAyNjQyIEwxMjguNDU5ODU4LDEwLjM4MTAyNjQgQzEyOC40Nzk4NTgsMTAuNDIxMDI2NiAxMjguNDk5NDQxLDEwLjQ2MjY5MjkgMTI4LjUxODYwOCwxMC41MDYwMjY0IEMxMjguNTM3Nzc0LDEwLjU0OTM2IDEyOC41NTU2OTEsMTAuNTkzNTI2MiAxMjguNTcyMzU4LDEwLjYzODUyNjQgQzEyOC41ODkwMjQsMTAuNTkzNTI2MiAxMjguNjA2NTI0LDEwLjU0ODk0MzMgMTI4LjYyNDg1OCwxMC41MDQ3NzY0IEMxMjguNjQzMTkxLDEwLjQ2MDYwOTUgMTI4LjY2MzE5MSwxMC40MTg1MjY2IDEyOC42ODQ4NTgsMTAuMzc4NTI2NCBMMTI5Ljg5OTg1OCw4LjE3NjAyNjQyIEMxMjkuOTE5ODU4LDguMTM3NjkyOSAxMjkuOTQxOTQxLDguMTE0MzU5OCAxMjkuOTY2MTA4LDguMTA2MDI2NDIgQzEyOS45OTAyNzQsOC4wOTc2OTMwNSAxMzAuMDI0MDI0LDguMDkzNTI2NDIgMTMwLjA2NzM1OCw4LjA5MzUyNjQyIEwxMzAuNDI0ODU4LDguMDkzNTI2NDIgWiIvPgogICAgPHBvbHlnb24gZmlsbD0iI0ZGRiIgcG9pbnRzPSI0Mi4zNDMgNy42NzYgMzYuMzEgMjQuMjUgMzAuMjc4IDcuNjc2IDIwLjI2MiA3LjY3NiAxNC4yMTQgMjQuMjkxIDguMTY3IDcuNjc2IDAgNy42NzYgOC44MjQgMzEuOTIyIDE5LjYwNCAzMS45MjIgMjUuMjcgMTYuMzU1IDMwLjkzNiAzMS45MjIgNDEuNjg1IDMxLjkyMiA1MC41MSA3LjY3NiIvPgogIDwvZz4KPC9zdmc+Cg=="><img src="https://trade.opskins.com/dist/logo-expresstrade.af3525fcf68507533980b2326ad8126e.png">
+      <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="fas fa-chevron-circle-down"></i></a>
+      <ul class="right hide-on-med-and-down">
+        <li class="item" data-go="login"><a href="#login">Login</a></li>
+        <li class="item" data-go="trade"><a href="#trade">Trade</a></li>
+        <li class="item" data-go="offers"><a href="#offers">Offers</a></li>
+        <li class="item" data-go="inventory"><a href="#inventory">Inventory</a></li>
+        <li class="profile hidden"></li>
+        <li class="item logout hidden" data-go="logout"><a><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <ul class="sidenav" id="mobile-demo">
+        <li>&nbsp;</li>
+        <li class="profile hidden"></li>
+        <li class="item logout hidden" data-go="logout"><a><i class="fas fa-sign-out-alt"></i>&nbsp;Logout</a></li>
+        <li>&nbsp;</li>
+        <li class="item" data-go="login"><a href="#login"><i class="fas fa-sign-in-alt"></i>&nbsp;Login</a></li>
+        <li class="item" data-go="trade"><a href="#trade"><i class="fas fa-user-plus"></i>&nbsp;Trade</a></li>
+        <li class="item" data-go="offers"><a href="#offers"><i class="fas fa-shopping-cart"></i>&nbsp;Offers</a></li>
+        <li class="item" data-go="inventory"><a href="#inventory"><i class="fas fa-shopping-basket"></i>&nbsp;Inventory</a></li>
+  </ul>
+
+  <div class="container"></div>
+
+</body>
+</html>
