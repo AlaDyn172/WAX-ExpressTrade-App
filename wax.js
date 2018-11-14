@@ -56,28 +56,69 @@ var refreshes = {};
     app.get('/user/resume_login/:refresh_token/:access_token/:userid', function(req, res) {
         if(!refreshes.hasOwnProperty(req.params.userid)) {
             refreshes[req.params.userid] = {
-                time: parseInt(time()+1800),
+                timp: parseInt(time()+1800),
                 refresh_token: req.params.refresh_token,
                 access_token: req.params.access_token
             }
-            checkTokens();
-        }
 
-        var access_token = refreshes[req.params.userid].access_token;
+            var access_token = refreshes[req.params.userid].access_token;
 
-        requ('https://api-trade.opskins.com/IUser/GetProfile/v1/', 'GET', {}, decodeURIComponent(access_token), function(resp) {
-
-            if(!resp.hasOwnProperty('response')) return res.redirect('/');
-
-            res.json({
-                success: true,
-                name: resp.response.user.display_name,
-                avatar: resp.response.user.avatar,
-                uid: resp.response.user.id,
-                access_token: decodeURIComponent(access_token),
-                refresh_token: decodeURIComponent(req.params.refresh_token)
+            requ('https://api-trade.opskins.com/IUser/GetProfile/v1/', 'GET', {}, decodeURIComponent(access_token), function(resp) {
+    
+                if(!resp.hasOwnProperty('response')) return res.redirect('/');
+    
+                res.json({
+                    success: true,
+                    name: resp.response.user.display_name,
+                    avatar: resp.response.user.avatar,
+                    uid: resp.response.user.id,
+                    time_left: refreshes[req.params.userid].timp-time(),
+                    access_token: decodeURIComponent(access_token),
+                    refresh_token: decodeURIComponent(req.params.refresh_token)
+                });
             });
-        });
+        } else {
+            if(refreshes[req.params.userid].timp-time() <= 0) {
+                checkTokens(req.params.userid, function(access_token, timp) {
+                    refreshes[req.params.userid].access_token = access_token;
+                    refreshes[req.params.userid].timp = timp;
+
+                    var access_token = refreshes[req.params.userid].access_token;
+
+                    requ('https://api-trade.opskins.com/IUser/GetProfile/v1/', 'GET', {}, decodeURIComponent(access_token), function(resp) {
+            
+                        if(!resp.hasOwnProperty('response')) return res.redirect('/');
+            
+                        res.json({
+                            success: true,
+                            name: resp.response.user.display_name,
+                            avatar: resp.response.user.avatar,
+                            uid: resp.response.user.id,
+                            time_left: refreshes[req.params.userid].timp-time(),
+                            access_token: decodeURIComponent(access_token),
+                            refresh_token: decodeURIComponent(req.params.refresh_token)
+                        });
+                    });
+                });
+            } else {
+                var access_token = refreshes[req.params.userid].access_token;
+
+                requ('https://api-trade.opskins.com/IUser/GetProfile/v1/', 'GET', {}, decodeURIComponent(access_token), function(resp) {
+        
+                    if(!resp.hasOwnProperty('response')) return res.redirect('/');
+        
+                    res.json({
+                        success: true,
+                        name: resp.response.user.display_name,
+                        avatar: resp.response.user.avatar,
+                        uid: resp.response.user.id,
+                        time_left: refreshes[req.params.userid].timp-time(),
+                        access_token: decodeURIComponent(access_token),
+                        refresh_token: decodeURIComponent(req.params.refresh_token)
+                    });
+                });
+            }
+        }
     });
 // LOGIN BY OPSKINS
 
@@ -539,14 +580,14 @@ function requ(url, method, body, access_token, cb) {
 function crequ(url, method, body, cb) {
     request({
         headers: {
-            'cache-control': 'no-cache',
-            Authorization: 'Basic NTdmMmY5NWQxMGFmOlZvJEVHeiNEWFBGdWJQSihUKHlPQjF1SDZkKE1Xc0hS'
+            Authorization: 'Basic ZGY5YTM4YWYxMmQ0OkQ1SU82NW5VeU91ODJiR3leKGt1Q1ZMV0R0UzRCakYo'
         },
         uri: url,
         method: method,
         form: body
     }, function(err, res, bodi) {
         if(err) throw err;
+        console.log(bodi);
         var response = JSON.parse(bodi);
         cb(response);
     });
@@ -556,23 +597,16 @@ function time() {
     return parseInt(new Date().getTime()/1000);
 }
 
-setInterval(function() {checkTokens();}, 5000);
+function checkTokens(userid, cb) {
+    crequ('https://oauth.opskins.com/v1/access_token', 'POST', {
+        grant_type: 'refresh_token',
+        refresh_token: refreshes[userid].refresh_token
+    }, function(resp) {
+        refreshes[userid].access_token = resp.access_token;
+        refreshes[userid].timp = parseInt(time()+1800);
 
-function checkTokens() {
-    for(var i in refreshes) {
-        var timp = refreshes[i].time;
-        var ref_token = i;
-
-        if(timp-time() <= 0) {
-            crequ('https://oauth.opskins.com/v1/access_token', 'POST', {
-                grant_type: 'refresh_token',
-                refresh_token: ref_token
-            }, function(resp) {
-                refreshes[i].access_token = resp.access_token;
-                refreshes[i].time = time()+1800;
-            });
-        }
-    }
+        cb(refreshes[userid].access_token, refreshes[userid].timp);
+    });
 }
 
 process.on('uncaughtException', function (err) {
