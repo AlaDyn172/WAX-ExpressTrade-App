@@ -75,7 +75,7 @@ $(function() {
         socket.on('user info', function(user) {
             $('.item[data-go="login"]').addClass('hidden');
             $('.profile').removeClass('hidden');
-            $('.logout').removeClass('hidden');
+            $('.logoutBtn').removeClass('hidden');
     
             $('.item[data-go="trade"]').removeClass('hidden');
             $('.item[data-go="offers"]').removeClass('hidden');
@@ -113,8 +113,8 @@ $(function() {
             var my_items = myitems;
             var his_value = 0;
             var my_value = 0;
-            if(his_items.length >= 0) his_items.sort(function(a,b) {return b.suggested_price_floor-a.suggested_price_floor;});
-            if(my_items.length >= 0) my_items.sort(function(a,b) {return b.suggested_price_floor-a.suggested_price_floor;});
+            if(his_items.length >= 0) his_items.sort(function(a,b) {return b.suggested_price-a.suggested_price;});
+            if(my_items.length >= 0) my_items.sort(function(a,b) {return b.suggested_price-a.suggested_price;});
 
             var Iteme01 = "";
             var Iteme02 = "";
@@ -122,29 +122,29 @@ $(function() {
             for(var h in his_items) {
                 var itm = his_items[h];
                 Iteme02 += `
-                    <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + itm.name + `" data-price="` + itm.suggested_price_floor + `">
+                    <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + itm.name + `" data-price="` + itm.suggested_price + `">
                         <div class="image">
                             <img src="` + itm.image["600px"] + `">
                         </div>
-                        <div class="price">$` + parseFloat(itm.suggested_price_floor/100).toFixed(2) + `</div>
+                        <div class="price">$` + parseFloat(itm.suggested_price/100).toFixed(2) + `</div>
                         <div class="name">` + itm.name + `</div>
                     </div>
                 `;
-                his_value += parseInt(itm.suggested_price_floor);
+                his_value += parseInt(itm.suggested_price);
             }
 
             for(var h in my_items) {
                 var itm = my_items[h];
                 Iteme01 += `
-                    <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + itm.name + `" data-price="` + itm.suggested_price_floor + `">
+                    <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + itm.name + `" data-price="` + itm.suggested_price + `">
                         <div class="image">
                             <img src="` + itm.image["600px"] + `">
                         </div>
-                        <div class="price">$` + parseFloat(itm.suggested_price_floor/100).toFixed(2) + `</div>
+                        <div class="price">$` + parseFloat(itm.suggested_price/100).toFixed(2) + `</div>
                         <div class="name">` + itm.name + `</div>
                     </div>
                 `;
-                my_value += parseInt(itm.suggested_price_floor);
+                my_value += parseInt(itm.suggested_price);
             }
 
             if(his_items.length == 0) Iteme02 = `<div style=" margin: 75px auto auto auto; ">No items in his inventory</div>`;
@@ -191,78 +191,92 @@ $(function() {
             addNewFriend(user.avatar, user.username, trade_user);
         });
 
-        socket.on('user sent offers', function(offers) {
-            view_trade_type = 'sent';
-
+        socket.on('user offers', function(offers) {
             var $html = "";
 
             for(var h in offers) {
                 var itm = offers[h];
 
                 var $verified = "";
-                if(itm.recipient.verified == true) $verified = '&nbsp;<i class="fa fa-check-circle text-success" style="color: #28a745;"></i>';
+                if(itm.sent_by_you && itm.recipient.verified) $verified = '&nbsp;<i class="fa fa-check-circle text-success" style="color: #28a745;"></i>';
+                else if(!itm.sent_by_you && itm.sender.verified) $verified = '&nbsp;<i class="fa fa-check-circle text-success" style="color: #28a745;"></i>';
 
                 var $case_opening = "";
-                if(itm.case_opening == true) $case_opening = '&nbsp;<img style="width: 25px; height: 18px;" src="">';
-
-                var $avatar = "";
-                if(itm.recipient.avatar == '/images/opskins-logo-avatar.png') $avatar = 'https://opskins.com/images/opskins-logo-avatar.png';
-                else $avatar = itm.recipient.avatar;
+                if(itm.is_case_opening) $case_opening = '<img style="width: 25px; height: 18px;" src="data:image/png;base64,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">&nbsp;';
 
                 var $state = "";
-                if(itm.state == 2 || itm.state == 9) $state = '<i class="far fa-clock" style="color: orange;"></i>';
-                else if(itm.state == 3) $state = '<i class="fas fa-check-square" style="color: lightgreen;"></i>';
-                else if(itm.state == 5 || itm.state == 10) $state = '<i class="fas fa-stopwatch" style="color: red;"></i>';
-                else if(itm.state == 6) $state = '<i class="fas fa-stopwatch" style="color: red;"></i>';
-                else if(itm.state == 7 || itm.state == 12) $state = '<i class="fas fa-times-circle" style="color: red;"></i>';
-                else if(itm.state == 8) $state = '<i class="fas fa-history" style="color: red;"></i>';
+                if(itm.state == 2 || itm.state == 9) $state = '<span style="color: orange;">PENDING</span>';
+                else if(itm.state == 3) $state = '<span style="color: lightgreen;">ACCEPTED</span>';
+                else if(itm.state == 5 || itm.state == 10) $state = '<span style="color: red;">EXPIRED</span>';
+                else if(itm.state == 6) $state = '<span style="color: red;">CANCELED</span>';
+                else if(itm.state == 7) $state = '<span style="color: red;">DECLINED</span>';
+                else if(itm.state == 12) $state = '<span style="color: red;">FAILED</span>';
+                else if(itm.state == 8) $state = '<span style="color: red;">INVALID ITEMS</span>';
+
+                var $name = "";
+                var $give = "";
+                var $get = "";
+
+                if(itm.sent_by_you) $name = itm.recipient.display_name;
+                else $name = itm.sender.display_name;
+
+                var val01 = 0;
+                var val02 = 0;
+                var $style_give = "";
+                var $style_get = "";
+                var $type = "";
+                for(var i in itm.sender.items) {
+                    val01 += parseInt(itm.sender.items[i].suggested_price);
+                }
+                for(var i in itm.recipient.items) {
+                    val02 += parseInt(itm.recipient.items[i].suggested_price);
+                }
+
+                if(itm.sent_by_you) {
+                    if(isNaN(val01)) val01 = 0.00;
+                    if(isNaN(val02)) val02 = 0.00;
+                    $give = `
+                        <span class="info1"><i class="far fa-eye"></i>&nbsp;GIVE</span><span class="info2">$` + parseFloat(val01/100).toFixed(2) + `<i class="fas fa-long-arrow-alt-right"></i></span>
+                    `;
+                    if(val01 <= 0.01) $style_give = "opacity: 0.15";
+                    if(val02 <= 0.01) $style_get = "opacity: 0.15";
+                    $get = `
+                        <span class="info1"><i class="far fa-eye"></i>&nbsp;GET</span><span class="info2">$` + parseFloat(val02/100).toFixed(2) + `<i class="fas fa-long-arrow-alt-left"></i></span>
+                    `;
+                    $type = "sent";
+                }
+                else {
+                    if(isNaN(val01)) val01 = 0.00;
+                    if(isNaN(val02)) val02 = 0.00;
+                    if(val01 <= 0.01) $style_get = 'opacity: 0.15';
+                    if(val02 <= 0.01) $style_give = 'opacity: 0.15';
+                    $give = `
+                        <span class="info1"><i class="far fa-eye"></i>&nbsp;GIVE</span><span class="info2">$` + parseFloat(val02/100).toFixed(2) + `<i class="fas fa-long-arrow-alt-right"></i></span>
+                    `;
+                    $get = `
+                        <span class="info1"><i class="far fa-eye"></i>&nbsp;GET</span><span class="info2">$` + parseFloat(val01/100).toFixed(2) + `<i class="fas fa-long-arrow-alt-left"></i></span>
+                    `;
+                    $type = "received";
+                }
 
                 $html += `
-                    <div class="offer" data-id="` + itm.id + `">
-                        <div class="sender_or_recipient">
-                            ` + $state + `
-                            <img src="` + $avatar + `">
-                            <span>&nbsp;<b>` + itm.recipient.name + `` + $verified + `` + $case_opening + `</b>&nbsp;received your offer for <b>` + Object.keys(itm.your_items).length + `</b> item(s) in exchange of <b>`+ Object.keys(itm.his_items).length +`</b> item(s).<button class="view_offer btn btn-success" data-id="` + itm.id + `"><i class="fas fa-eye"></i></button></span>
+                    <div class="offer" data-id="` + itm.id + `" data-type="` + $type + `">
+                        <div class="row">
+                        <div class="col s12">
+                            <div class="user">
+                                <div class="ify">`+$case_opening+$verified+`</div>
+                                <div class="name">`+$name+`</div>
+                            </div>
+                            <div class="status">
+                                STATUS: ` + $state + `
+                            </div>
                         </div>
-                    </div>
-                `;
-            }
-
-            $('.offers').html($html);
-        });
-
-        socket.on('user received offers', function(offers) {
-            view_trade_type = 'received';
-
-            var $html = "";
-
-            for(var h in offers) {
-                var itm = offers[h];
-
-                var $verified = "";
-                if(itm.sender.verified == true) $verified = '&nbsp;<i class="fa fa-check-circle text-success" style="color: #28a745;"></i>';
-
-                var $avatar = "";
-                if(itm.sender.avatar == '/images/opskins-logo-avatar.png') $avatar = 'https://opskins.com/images/opskins-logo-avatar.png';
-                else $avatar = itm.sender.avatar;
-
-                if(itm.case_opening == true) continue;
-
-                var $state = "";
-                if(itm.state == 2 || itm.state == 9) $state = '<i class="far fa-clock" style="color: orange;"></i>';
-                else if(itm.state == 3) $state = '<i class="fas fa-check-square" style="color: lightgreen;"></i>';
-                else if(itm.state == 5 || itm.state == 10) $state = '<i class="fas fa-stopwatch" style="color: red;"></i>';
-                else if(itm.state == 6) $state = '<i class="fas fa-stopwatch" style="color: red;"></i>';
-                else if(itm.state == 7 || itm.state == 12) $state = '<i class="fas fa-times-circle" style="color: red;"></i>';
-                else if(itm.state == 8) $state = '<i class="fas fa-history" style="color: red;"></i>';
-                
-
-                $html += `
-                    <div class="offer" data-id="` + itm.id + `">
-                        <div class="sender_or_recipient">
-                            ` + $state + `
-                            <img src="` + $avatar + `">
-                            <span>&nbsp;<b>` + itm.sender.name + `` + $verified + `</b>&nbsp;sent you an offer for <b>` + Object.keys(itm.his_items).length + `</b> item(s) in exchange of <b>`+ Object.keys(itm.your_items).length +`</b> item(s).<button class="view_offer btn btn-success" data-id="` + itm.id + `"><i class="fas fa-eye"></i></button></span>
+                        <div class="col s6 give" style="` + $style_give + `">
+                            ` + $give + `
+                        </div>
+                        <div class="col s6 get" style="` + $style_get + `">
+                            ` + $get + `
+                        </div>
                         </div>
                     </div>
                 `;
@@ -281,93 +295,61 @@ $(function() {
             var his_value = 0;
             var my_value = 0;
 
-            if(trade_appid == 1) {
-                if(his_items.length >= 0) his_items.sort(function(a,b) {return b.suggested_price_floor-a.suggested_price_floor;});
-                if(my_items.length >= 0) my_items.sort(function(a,b) {return b.suggested_price_floor-a.suggested_price_floor;});
+            if(his_items.length >= 0) his_items.sort(function(a,b) {return b.suggested_price-a.suggested_price;});
+            if(my_items.length >= 0) my_items.sort(function(a,b) {return b.suggested_price-a.suggested_price;});
 
-                var Iteme01 = "";
-                var Iteme02 = "";
+            var Iteme01 = "";
+            var Iteme02 = "";
 
-                for(var h in his_items) {
-                    var itm = his_items[h];
-                    Iteme02 += `
-                        <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + itm.name + `" data-price="` + itm.suggested_price_floor + `">
-                            <div class="image">
-                                <img src="` + itm.image["600px"] + `">
-                            </div>
-                            <div class="price">$` + parseFloat(itm.suggested_price_floor/100).toFixed(2) + `</div>
-                            <div class="name">` + itm.name + `</div>
+            for(var h in his_items) {
+                var itm = his_items[h];
+
+                var $name = "";
+                var $image = "";
+                if(appid == 12) { $name = itm.market_name; $image = itm.image;}
+                else { $name = itm.name; $image = itm.image["600px"];}
+
+                Iteme02 += `
+                    <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + $name + `" data-price="` + itm.suggested_price + `">
+                        <div class="image">
+                            <img src="` + $image + `">
                         </div>
-                    `;
-                    his_value += parseInt(itm.suggested_price_floor);
-                }
-
-                for(var h in my_items) {
-                    var itm = my_items[h];
-                    Iteme01 += `
-                        <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + itm.name + `" data-price="` + itm.suggested_price_floor + `">
-                            <div class="image">
-                                <img src="` + itm.image["600px"] + `">
-                            </div>
-                            <div class="price">$` + parseFloat(itm.suggested_price_floor/100).toFixed(2) + `</div>
-                            <div class="name">` + itm.name + `</div>
-                        </div>
-                    `;
-                    my_value += parseInt(itm.suggested_price_floor);
-                }
-
-                if(his_items.length == 0) Iteme02 = `<div style=" margin: 75px auto auto auto; ">No items in his inventory</div>`;
-                if(my_items.length == 0) Iteme01 = `<div style=" margin: 75px auto auto auto; ">No items in your inventory</div>`;
-                
-
-                $('.container #your_inv_text').html('Your inventory ($' + parseFloat(my_value/100).toFixed(2) + ')');
-                $('.container .your_inventory').html(Iteme01);
-                $('.container #his_inv_text').html('His inventory ($' + parseFloat(his_value/100).toFixed(2) + ')');
-                $('.container .his_inventory').html(Iteme02);
-            } else {
-                if(his_items.length >= 0) his_items.sort(function(a,b) {return b.suggested_price-a.suggested_price;});
-                if(my_items.length >= 0) my_items.sort(function(a,b) {return b.suggested_price-a.suggested_price;});
-
-                var Iteme01 = "";
-                var Iteme02 = "";
-
-                for(var h in his_items) {
-                    var itm = his_items[h];
-                    Iteme02 += `
-                        <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + itm.market_name + `" data-price="` + itm.suggested_price + `">
-                            <div class="image">
-                                <img src="` + itm.image + `">
-                            </div>
-                            <div class="price">$` + parseFloat(itm.suggested_price/100).toFixed(2) + `</div>
-                            <div class="name">` + itm.market_name + `</div>
-                        </div>
-                    `;
-                    his_value += parseInt(itm.suggested_price);
-                }
-
-                for(var h in my_items) {
-                    var itm = my_items[h];
-                    Iteme01 += `
-                        <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + itm.market_name + `" data-price="` + itm.suggested_price + `">
-                            <div class="image">
-                                <img src="` + itm.image + `">
-                            </div>
-                            <div class="price">$` + parseFloat(itm.suggested_price/100).toFixed(2) + `</div>
-                            <div class="name">` + itm.market_name + `</div>
-                        </div>
-                    `;
-                    my_value += parseInt(itm.suggested_price);
-                }
-
-                if(his_items.length == 0) Iteme02 = `<div style=" margin: 75px auto auto auto; ">No items in his inventory</div>`;
-                if(my_items.length == 0) Iteme01 = `<div style=" margin: 75px auto auto auto; ">No items in your inventory</div>`;
-                
-
-                $('.container #your_inv_text').html('Your inventory ($' + parseFloat(my_value/100).toFixed(2) + ')');
-                $('.container .your_inventory').html(Iteme01);
-                $('.container #his_inv_text').html('His inventory ($' + parseFloat(his_value/100).toFixed(2) + ')');
-                $('.container .his_inventory').html(Iteme02);
+                        <div class="price">$` + parseFloat(itm.suggested_price/100).toFixed(2) + `</div>
+                        <div class="name">` + itm.market_name + `</div>
+                    </div>
+                `;
+                if(itm.suggested_price != null) his_value += parseInt(itm.suggested_price);
             }
+
+            for(var h in my_items) {
+                var itm = my_items[h];
+
+                var $name = "";
+                var $image = "";
+                if(appid == 12) { $name = itm.market_name; $image = itm.image;}
+                else { $name = itm.name; $image = itm.image["600px"];}
+
+                Iteme01 += `
+                    <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + $name + `" data-price="` + itm.suggested_price + `">
+                        <div class="image">
+                            <img src="` + $image + `">
+                        </div>
+                        <div class="price">$` + parseFloat(itm.suggested_price/100).toFixed(2) + `</div>
+                        <div class="name">` + itm.market_name + `</div>
+                    </div>
+                `;
+                if(itm.suggested_price != null) my_value += parseInt(itm.suggested_price);
+            }
+
+            if(his_items.length == 0) Iteme02 = `<div style=" margin: 75px auto auto auto; ">No items in his inventory</div>`;
+            if(my_items.length == 0) Iteme01 = `<div style=" margin: 75px auto auto auto; ">No items in your inventory</div>`;
+            
+
+            $('.container #your_inv_text').html('Your inventory ($' + parseFloat(my_value/100).toFixed(2) + ')');
+            $('.container .your_inventory').html(Iteme01);
+            $('.container #his_inv_text').html('His inventory ($' + parseFloat(his_value/100).toFixed(2) + ')');
+            $('.container .his_inventory').html(Iteme02);
+            
         });
 
         socket.on('user change inventory', function(inv) {
@@ -375,93 +357,88 @@ $(function() {
             var my_items = inv;
             var Iteme = "";
 
-            if(inv_appid == 1) {
-                if(my_items.length >= 0) my_items.sort(function(a,b) {return b.suggested_price_floor-a.suggested_price_floor;});
+            if(my_items.length >= 0) my_items.sort(function(a,b) {return b.suggested_price-a.suggested_price;});
 
-                for(var h in my_items) {
-                    var itm = my_items[h];
-                    Iteme += `
-                        <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + itm.name + `" data-price="` + itm.suggested_price_floor + `">
-                            <div class="image">
-                                <img src="` + itm.image["600px"] + `">
-                            </div>
-                            <div class="price">$` + parseFloat(itm.suggested_price_floor/100).toFixed(2) + `</div>
-                            <div class="name">` + itm.name + `</div>
+            for(var h in my_items) {
+                var itm = my_items[h];
+
+                var $name = "";
+                var $image = "";
+                if(inv_appid == 12) { $name = itm.market_name; $image = itm.image;}
+                else { $name = itm.name; $image = itm.image["600px"];}
+
+                Iteme += `
+                    <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + $name + `" data-price="` + itm.suggested_price + `">
+                        <div class="image">
+                            <img src="` + $image + `">
                         </div>
-                    `;
-                    my_value += parseInt(itm.suggested_price_floor);
-                }
-
-                $('#your_inv_total_value').html('Inventory total value: $' + parseFloat(my_value/100).toFixed(2));
-
-                if(my_items.length == 0) Iteme = `<div style=" margin: 75px auto auto auto; ">No items in your inventory</div>`;
-
-                $('.see_inventory').html(Iteme);
-            } else {
-                if(my_items.length >= 0) my_items.sort(function(a,b) {return b.suggested_price-a.suggested_price;});
-
-                for(var h in my_items) {
-                    var itm = my_items[h];
-                    Iteme += `
-                        <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + itm.market_name + `" data-price="` + itm.suggested_price + `">
-                            <div class="image">
-                                <img src="` + itm.image + `">
-                            </div>
-                            <div class="price">$` + parseFloat(itm.suggested_price/100).toFixed(2) + `</div>
-                            <div class="name">` + itm.market_name + `</div>
-                        </div>
-                    `;
-                    my_value += parseInt(itm.suggested_price);
-                }
-
-                $('#your_inv_total_value').html('Inventory total value: $' + parseFloat(my_value/100).toFixed(2));
-
-                if(my_items.length == 0) Iteme = `<div style=" margin: 75px auto auto auto; ">No items in your inventory</div>`;
-
-                $('.see_inventory').html(Iteme);
+                        <div class="price">$` + parseFloat(itm.suggested_price/100).toFixed(2) + `</div>
+                        <div class="name">` + itm.market_name + `</div>
+                    </div>
+                `;
+                if(itm.suggested_price != null) my_value += parseInt(itm.suggested_price);
             }
+
+            $('#your_inv_total_value').html('Inventory total value: $' + parseFloat(my_value/100).toFixed(2));
+
+            if(my_items.length == 0) Iteme = `<div style=" margin: 75px auto auto auto; ">No items in your inventory</div>`;
+
+            $('.see_inventory').html(Iteme);
         });
 
         socket.on('user withdraw to opskins success', function() {
             $.ambiance({message: 'You have successfully withdrawn the item(s) to OPSkins!', type: 'success'});
+            $('#withdrawto_opskins').html('Withdraw item(s) to OPSkins');
             socket.emit('user change inventory', inv_appid);
         });
 
-        socket.on('user get trade', function(tradeid, sender, recipient, state, state_text, type, tip) {
+        socket.on('user get trade', function(tradeid, sender, recipient, state, state_text, case_opening, type, tip) {
             var items1 = "";
             var items2 = "";
             var items1_val = 0;
             var items2_val = 0;
 
-            if(sender.items.length >= 0) sender.items.sort(function(a,b) {return b.suggested_price_floor-a.suggested_price_floor;});
-            if(recipient.items.length >= 0) recipient.items.sort(function(a,b) {return b.suggested_price_floor-a.suggested_price_floor;});
+            if(sender.items.length >= 0) sender.items.sort(function(a,b) {return b.suggested_price-a.suggested_price;});
+            if(recipient.items.length >= 0) recipient.items.sort(function(a,b) {return b.suggested_price-a.suggested_price;});
 
             for(var i in sender.items) {
                 var itm = sender.items[i];
+
+                var $name = "";
+                var $image = "";
+                if(inv_appid == 12) { $name = itm.market_name; $image = itm.image;}
+                else { $name = itm.name; $image = itm.image["600px"];}
+                
                 items1 += `
-                    <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + itm.name + `" data-price="` + itm.suggested_price_floor + `">
+                    <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + $name + `" data-price="` + itm.suggested_price + `">
                         <div class="image">
-                            <img src="` + itm.image["600px"] + `">
+                            <img src="` + $image + `">
                         </div>
-                        <div class="price">$` + parseFloat(itm.suggested_price_floor/100).toFixed(2) + `</div>
+                        <div class="price">$` + parseFloat(itm.suggested_price/100).toFixed(2) + `</div>
                         <div class="name">` + itm.name + `</div>
                     </div>
                 `;
-                items1_val += parseInt(itm.suggested_price_floor);
+                if(itm.suggested_price != null) items1_val += parseInt(itm.suggested_price);
             }
 
             for(var i in recipient.items) {
                 var itm = recipient.items[i];
+
+                var $name = "";
+                var $image = "";
+                if(inv_appid == 12) { $name = itm.market_name; $image = itm.image;}
+                else { $name = itm.name; $image = itm.image["600px"];}
+
                 items2 += `
-                    <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + itm.name + `" data-price="` + itm.suggested_price_floor + `">
+                    <div style="border: 1px solid ` + itm.color +  `;" class="item" data-id="` + itm.id + `" data-name="` + $name + `" data-price="` + itm.suggested_price + `">
                         <div class="image">
-                            <img src="` + itm.image["600px"] + `">
+                            <img src="` + $image + `">
                         </div>
-                        <div class="price">$` + parseFloat(itm.suggested_price_floor/100).toFixed(2) + `</div>
+                        <div class="price">$` + parseFloat(itm.suggested_price/100).toFixed(2) + `</div>
                         <div class="name">` + itm.name + `</div>
                     </div>
                 `;
-                items2_val += parseInt(itm.suggested_price_floor);
+                if(itm.suggested_price != null) items2_val += parseInt(itm.suggested_price);
             }
 
             $buttons = '';
@@ -480,9 +457,36 @@ $(function() {
                 text2 = 'His';
             }
 
-            $('.container').html(`
+            if(case_opening) {
+                var keys = recipient.items.length;
+
+                var key = `
+                    <div style="border: 1px solid ` + recipient.items[0].color +  `;" class="item" data-id="` + recipient.items[0].id + `" data-name="` + recipient.items[0].name + `" data-price="` + recipient.items[0].suggested_price + `">
+                        <div class="amount">`+keys+`x</div>
+                        <div class="image">
+                            <img src="` + recipient.items[0].image["600px"] + `">
+                        </div>
+                        <div class="price">$` + parseFloat(recipient.items[0].suggested_price/100).toFixed(2) + `</div>
+                        <div class="name">` + recipient.items[0].name + `</div>
+                    </div>
+                `;
+
+                $('.container').html(`
                 <center>
-                    <h3>VIEWING TRADE</h3>
+                    <h5><i class="fas fa-arrow-alt-circle-left fa-2x backViewTrade" style="color: #66cccc;"></i></h5>
+                    <h3 style="margin-top: -15px;">VIEWING CASE OPENING TRADE</h3>
+                    <h5>Trade: #` + tradeid + ` - State: ` + state + ` - State name: ` + state_text + `</h5>
+                    <h5 class="case_opening">` + key + `</h5>
+                    <h5>Your items won ($` + parseFloat(items1_val/100).toFixed(2) + `)</h5>
+                    <div class="see_inventory">` + items1 + `</div>
+                    ` + $buttons + `
+                </center>
+            `);
+            } else {
+                $('.container').html(`
+                <center>
+                    <h5><i class="fas fa-arrow-alt-circle-left fa-2x backViewTrade" style="color: #66cccc;"></i></h5>
+                    <h3 style="margin-top: -15px;">VIEWING TRADE</h3>
                     <h5>Trade: #` + tradeid + ` - State: ` + state + ` - State name: ` + state_text + `</h5>
                     <h5>` + text1 + ` items ($` + parseFloat(items1_val/100).toFixed(2) + `)</h5>
                     <div class="see_inventory">` + items1 + `</div>
@@ -491,19 +495,28 @@ $(function() {
                     ` + $buttons + `
                 </center>
             `);
+            }
 
             view_trade = true;
         });
     }
 
-    $('body').on('click', '#tradesSent', function() {
-        $('.offers').html(`<i class="fas fa-spinner fa-spin"></i>`);
-        socket.emit('user offers', 'sent');
-    });
+    $('body').on('click', '.backViewTrade', function() {
+        view_trade = false;
+        inventory = false;
+        opskins_selected = [];
+        $('.sidenav').sidenav('close');
 
-    $('body').on('click', '#tradesReceived', function() {
+        $('.container').html(`
+            <center>
+                <h3>TRADE OFFERS</h3>
+                <h5>Thousands of unique virtual items available for trade</h5>
+                <small>Please note: Trade Offers that are sent from verified sites will display <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEQAAAAyCAYAAADlaH1uAAAOA0lEQVRogeWbeXzU9ZnH39/fHMlMZpIJCYlAwg0KCIiAB1QL6tKutNa6iruseJSyFg92EatdWavY4oXsawtSTRE1HCrCUn3ValV0bcshckgCkSCXBMg9gTCZHJOZ37N//ObOTDIh2e5ru5/X63llft/7+fye7/N8j1/U+KKDdAEzSv0Z6APosVkCAihlAjyIzADcACalOOTxcbkrnT/cMQKH1dRVP53iiLuNa9YfJstqwmZW0VmzgSeBQMy4iC4jdhHeUvCoSSn21Xp57Kp+PHXdAEwqpi3MKYzFj8iHKJ6I7QSjUyXBPgUULwD3hIbU0tLOghkDe0wGwIicNG4ZnsVLJXVMzLPjFwllrQCVEyEhlB77rOBNs1Lsdbfwrf4Oll5fkLAfLcXxPAnKjQQtAomS4LPB1d1AJkC5p43rB2Yy69I+KXbRNX46pR8Z6SbO+wKI0f3tQI6RG3pZKvJbBERhQm3WlNq/t64Zm1Wj+OahSfsw1Vz7Y2raAp2LL4DTrJ3LMJu+r8e3EP0iFIDKNSvtdxXuVp6+roBL82y9xQfZNhNnz/t57/g5ChxWdNSnKJURGQggIatVoMCiaVS1+GccaWjx3H5xNptvGc6w7LRQk6OAK4EWjCnXX81/75suBxLQhU8qPBxr8Z+8LCttoE+XpGU1BQfP+3Km9bU1bJ1zMSYtfpr1DIfrWxlXfIhBdsusdJPaGHob8b2YlEIXKGlo2ZBvN9/x5NX9+MnkvPjmrgQmADbgGuATJZJcuWjsrfQy7/cnv/NlfcsfsmyG61EiiFIgBhEiQptAy7nWVz+YM2rud0dk9UT3pPjXj0/z7Ccna8m19zVSJNbdS/A5IJW3XeIa8NwNhQxxpSVqKoQs4O+A/0yVkFuB+a1+3b/jVNMMh9XU4Y2EENAFk6aYPCDjvwAf0BTMSsVUFIYqHgwTTuTj2t3NgcEfHD03IzPNcNYa0OzX8QUEwyAVze0BcmyWIz8c5XoVyEvQvwY0ByUQ/OtPlZAmICOVgv/H8UoqUeYu/n+Q4QHmpULIC//TI/lLwNfeThez4UHoemE2D8iNTwwEAvzil6vYtWs/Pp8Pi8UCgCBoSkPXdc6f9/Cje2Yxb97tHRrdsXM/Jg2uvPKyDnkrVhTz8dZteL0tWK1mQAUXw4bTbmz0cPMPZvCzR++lvPwYd9y5CFeWE7M5sSqapjh58gxXXDGeNa88i1IJXdkZoNhQQiSZaCJSJXFoaW2V6264S0ATsAv0FegTlByBXMl0jRdwyajRM+Kry969B8VkHiTvvLu1Q96P5i4WsAhYBXLj2s2RjMyxAhdJ4cCpIiIy585Hg2VDZfokEIcAUrz2tx36i8L3Qnp3ZiH3AxfFJ656cQOfbi1m9JgZLHjwbvr1z8Pf7gfAbDZzsOxrFj+2BDjHrFk3xtQ9cPAwU751KwG/jyGDB8TkvfnW73h1zTP06z+ZRx65lyFDBhLwBxAEs9nM6VNVPPDA40A1ixY9Q2Ojhzc2rGP4iKksWbIQu92GHggQPyna2nxkZTqZOXNaMj33A++FnzqxkOp4Gmvr3NK37+WitH5SWlqelO5frSiW55cVSeN5TzitpORrQRsmMFjy+18tu/eUhvPa2nwyaswMgdxO29349vvy9NMrRETk3vn/JoB8+NG2zt58KpgmUXons5DZQH584sqV66mr28fCh55h7NiLkzHOggfvjHnes7ecyZOux+7IZtzYS/iq/GjMouDlojc4VLafgoGXsnPnlxw+fJx2f2Tz6vf7MWkas2ffBEDpgcMUvfQSgwZPo6qqlo0bf48edJhmk4mKikqmTL2cq6+akHSMQWwFPotJkcTW4Y6nsa7OLTk54yXdNkyqa+pSpv/AgeMCThk46CopLz8m13z778VqGyUlJYfCZSZNvlnAIa4+E4K+I1vAJZAl0F+s6ZcImGThQ0tFROSWWx8UKJTs3IkC/aLKu8TYyDhk1679qQzvknjdE1nIPRhnHzF4YflruN0lLPjnpeTndQg8CVFS8jWTJn+bocNGcezoTgC+OXEKTSl0PbLWXrr0YR5/XOFyZaJplyEiKKXQNIXbfY66ukaOH2tg3LhLqKysYcvmTQwZejGjx4wg4B9nhNPgBvObb05z3/1zuOKK8V0NbxNQ3iE1gXWcjKexts4truwxUlA4McYvxOP48aNy5MgJERH58ssycThHSpZruOwvOSIiIqWl5TJk6LVic4yR8vJjIiJy+nSHQBaD3XtKxWwplLx+V4qILvfdv0RAybr176RiAZ0hTxLMjviEuYlqPrRoqYAms//xYdF1XZqavDFSXn5Mvvu39wjY5aOPtkl1dZ04ssYKFMj4y26WKVNvk+Ejr5Ohw6fJ4CHXSl6/K8Tj8cr7738mmqm/TJl6q3g8XhER0XU9LHX1DXLvTwznuerX66WqqlYgWyZOulm83mYJRJUNiYjI2bONUlNT3xkZGxKRISLE72UqgMLohKNHTzJ+wkxcWU6cDgdp6VaUpkWOY5Sips5N5akd/OCH8/n35T9n4qQbOddwhkGDR+NtbqLJ24xSCpNJIysrkyyng+LXn2fhQ0vZtmM3eXl96ZvTB7MleLImoDSFt6mZI1/vZPjIKRw5vJV5//QYr6xey8RJk7BYzbS0tMZYu8LYXB4/XsHGN1cwc+b0ZNOlAGMx1gHRPmRuPBlgeHhdFyrPVGFJt9He2gQx0d4PmJh/38+ZPu0qhg+/DEdmPtu2fUCWy4Gu6ygUSilOnDjNTTfdRY3VjtI00tPTINBMY6OH2qoqYvfwOuDn6qkzefe3RXz2x895ZfWzWG2jKTlQjr+ticQ4w9RrZnVGxnPJyABiLKSe8HFcLA4cOMzBsiM4HHZU1PGYILS1+cjp42L69Kv44osStm//E3Pm3EFubnbCDrds+RB/IMCs227kzJlq/vTn3TgcGcF2I/C1t2OxWPj+9wzFPvvjF5w4for8/NwYhxwNQTh39jw3/M1U+l3UN1GRdoyAkYzNMCF3A68lK/RXhJ/SxWY1RMh5wPmXGNH/IloAe1eFNOAJ/vrJAGNv1iWUiFwLWDEcQzoGi4FOaxnQg2XtxHpD36cnzk95u6xhfn+nldCKSRdIM4HNoiECrX6dNJN26J4Juc9n28wugLLaFv875eeet5qwaUphMSnSzcaRTcjD6ALnWv3MHpf7y8JMS/w4tShdwjoCbRgvPiVCUinXLYwrOsiBU54KnNbCDkeZ0f359Lqx+fa8ld8ZyOnzPu7+uOJSf4u/BHMwrkdf/UCQWwF3a/H86YV3/3rmoF4fe68T8taBBv7h3eNMyLfP00V+E7yrIaJZJEpZlOKk17emXZcfA7isppocqynPOEyILh/73OwPFFS3Bs6UzR1DYaalV8ef6s1dSggILPu8mmyHBYHVKE5FcqMVM3636zoFdsvc/jYL/W3mKdlWU55fJKpMNJHhNlY7zaYzntYAy7dX9ebwgV4mZHNZA/tqvAzJsIRuVBd3tA4V9ajQESwm9aJFU0t0xDgrjJlmKvavyFMBYIQrjV+V1VPR2N6bKvQeIa1+YdnOanIc1uh3ug6oBCK+QyRyQR7B/Sh1Q0eLiIe8LHBaRHCaNfDpLNte2VsqAL1IyKayBvZWexmUYYn/ZuJfOpaOuozucGOfCGGTWqyUsQ0IAKP62HjxoJvy+tYk9bqPXiOkaF8NGRlmAnTYQW5CqIraDRp/w1xEfIqht0rGyxtAQ3SCzaTAL7y8u7a31OgdQjZ/dZbtlc2MdFgBQ+doQfFUjF8ITxsVul8gXDEekSi4OD4rAIzITmPt4bOc8fSOL+kVQp7bUYXTbg4qRyJ5GYiEhHAojodE8kPfohhtvi4i3yQ6v3CaNc62tLN8e3VvqNJzQjaXNbCnxstwhzV80JsQIo8lnAsisdMompSg8xXFE+EoHCcBhBGuNFaW1XPsbFtP1ekZIe0B4dmd1WRlGFOlw1yJlddB1Ua+QkqCcF54HbJGCRUqOMviBYFMswl/cztbvmpI2myq6BEhWw6dZW+Vl2EdI0syLDT0jJouKirKxCxKQ2Gan3XVqF+EAa501pc10Nye4kiS4IIJ8evCf+yqwemwhA5nU5E3QJ2NbSku5CoVFYllLaj6LiwPlCI/3UxpbTNvH+yZlVwwIRtK3Xxe2cRIZxp6CgOOhBwWxMyZUKgNh9voiKMWpvSZTbBWvtPKsi+q8bSlsllPjAsmZNWeOlwOC/7kV6HJZD1CVawjSRh2XwdpSBa24kVHKMyw8FVNM+tK3Beq1oURUry/nt01XgaH1x2qW4JSjxgtSZTfiNndCvBwwrDSiQQELnKlUVRST1vgwnbx3SbErwsr99SRndGjbfd6UCeNn0FGws5VQGQNIu4U/VJYdBEG2CyUVnv5zZ4LW712m5D3Djeyt7rJ2NF2c8AxEj7Big7DwbfdybqjK9GB/Cwrq0vqabmAiNMtQgK6sHxXFTa7mQCpzu4kIlIMqtH40DZIjIG3CO2QLwA6QoHNwoGaZjaVdT/idIuQDaVutlV4GOVM6+p7rZQgIgsiy/jwDviBnjENugj5mVZe2FVNk697EadbhBTtq8XltBIIfjncC7IWpC7iUGU9CndPG9UVFNgNK9lQ2j0rSZmQdSVudlR6GeqwhlffvSGgHg2vxIRFvdWwX4S+WWkU7avtVsRJmZBVu2txZlhSup/oDkTkteC02Y5StSkv8FKQgXYLX9Y0U9SNiJPK/8uwZl89u+q8TMi1oyMJjy16BrkX4eveblVXimF90ikudVNe15JSnf8G35+PvTMIp/0AAAAASUVORK5CYII=" width="25"> or <i class="fa fa-check-circle text-success" style="color: #28a745;"></i> next to the account's name. Happy trading!</small>
+                <div class="offers"></div>
+            </center>
+        `);
         $('.offers').html(`<i class="fas fa-spinner fa-spin"></i>`);
-        socket.emit('user offers', 'received');
+        socket.emit('user offers');
     });
 
     $('body').on('click', '.itemGo', function() {
@@ -538,11 +551,14 @@ $(function() {
     $('body').on('click', '#withdrawto_opskins', function() {
         if(opskins_selected.length < 1 && opskins_selected.length > 50) return $.ambiance({message: 'You can select between 1 and 50 items at once!', type: 'error'});
         if(opskins_selected.length == 0) return $.ambiance({message: 'You need to select at least one item to send it to OPSkins inventory!', type: 'error'});
+        $(this).html('<i class="fas fa-spinner fa-spin"></i>');
         socket.emit('user withdraw to opskins', encodeURIComponent(opskins_selected.join(',')));
     });
 
-    $('body').on('click', '.view_offer', function() {
+    $('body').on('click', '.offers .offer', function() {
         var $trade_id = $(this).attr('data-id');
+        var $trade_type = $(this).attr('data-type');
+        view_trade_type = $trade_type;
         socket.emit('user get trade', $trade_id);
     });
 
@@ -577,6 +593,8 @@ $(function() {
 
     $('body').on('click', '.makeOfferFriend', function() {
         var $trade = $(this).attr('data-trade');
+
+        $(this).html('<i class="fas fa-spinner fa-spin"></i>');
 
         trade_user = $trade;
         trade_appid = 1;
@@ -683,13 +701,11 @@ $(function() {
                     <h3>TRADE OFFERS</h3>
                     <h5>Thousands of unique virtual items available for trade</h5>
                     <small>Please note: Trade Offers that are sent from verified sites will display <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEQAAAAyCAYAAADlaH1uAAAOA0lEQVRogeWbeXzU9ZnH39/fHMlMZpIJCYlAwg0KCIiAB1QL6tKutNa6iruseJSyFg92EatdWavY4oXsawtSTRE1HCrCUn3ValV0bcshckgCkSCXBMg9gTCZHJOZ37N//ObOTDIh2e5ru5/X63llft/7+fye7/N8j1/U+KKDdAEzSv0Z6APosVkCAihlAjyIzADcACalOOTxcbkrnT/cMQKH1dRVP53iiLuNa9YfJstqwmZW0VmzgSeBQMy4iC4jdhHeUvCoSSn21Xp57Kp+PHXdAEwqpi3MKYzFj8iHKJ6I7QSjUyXBPgUULwD3hIbU0tLOghkDe0wGwIicNG4ZnsVLJXVMzLPjFwllrQCVEyEhlB77rOBNs1Lsdbfwrf4Oll5fkLAfLcXxPAnKjQQtAomS4LPB1d1AJkC5p43rB2Yy69I+KXbRNX46pR8Z6SbO+wKI0f3tQI6RG3pZKvJbBERhQm3WlNq/t64Zm1Wj+OahSfsw1Vz7Y2raAp2LL4DTrJ3LMJu+r8e3EP0iFIDKNSvtdxXuVp6+roBL82y9xQfZNhNnz/t57/g5ChxWdNSnKJURGQggIatVoMCiaVS1+GccaWjx3H5xNptvGc6w7LRQk6OAK4EWjCnXX81/75suBxLQhU8qPBxr8Z+8LCttoE+XpGU1BQfP+3Km9bU1bJ1zMSYtfpr1DIfrWxlXfIhBdsusdJPaGHob8b2YlEIXKGlo2ZBvN9/x5NX9+MnkvPjmrgQmADbgGuATJZJcuWjsrfQy7/cnv/NlfcsfsmyG61EiiFIgBhEiQptAy7nWVz+YM2rud0dk9UT3pPjXj0/z7Ccna8m19zVSJNbdS/A5IJW3XeIa8NwNhQxxpSVqKoQs4O+A/0yVkFuB+a1+3b/jVNMMh9XU4Y2EENAFk6aYPCDjvwAf0BTMSsVUFIYqHgwTTuTj2t3NgcEfHD03IzPNcNYa0OzX8QUEwyAVze0BcmyWIz8c5XoVyEvQvwY0ByUQ/OtPlZAmICOVgv/H8UoqUeYu/n+Q4QHmpULIC//TI/lLwNfeThez4UHoemE2D8iNTwwEAvzil6vYtWs/Pp8Pi8UCgCBoSkPXdc6f9/Cje2Yxb97tHRrdsXM/Jg2uvPKyDnkrVhTz8dZteL0tWK1mQAUXw4bTbmz0cPMPZvCzR++lvPwYd9y5CFeWE7M5sSqapjh58gxXXDGeNa88i1IJXdkZoNhQQiSZaCJSJXFoaW2V6264S0ATsAv0FegTlByBXMl0jRdwyajRM+Kry969B8VkHiTvvLu1Q96P5i4WsAhYBXLj2s2RjMyxAhdJ4cCpIiIy585Hg2VDZfokEIcAUrz2tx36i8L3Qnp3ZiH3AxfFJ656cQOfbi1m9JgZLHjwbvr1z8Pf7gfAbDZzsOxrFj+2BDjHrFk3xtQ9cPAwU751KwG/jyGDB8TkvfnW73h1zTP06z+ZRx65lyFDBhLwBxAEs9nM6VNVPPDA40A1ixY9Q2Ojhzc2rGP4iKksWbIQu92GHggQPyna2nxkZTqZOXNaMj33A++FnzqxkOp4Gmvr3NK37+WitH5SWlqelO5frSiW55cVSeN5TzitpORrQRsmMFjy+18tu/eUhvPa2nwyaswMgdxO29349vvy9NMrRETk3vn/JoB8+NG2zt58KpgmUXons5DZQH584sqV66mr28fCh55h7NiLkzHOggfvjHnes7ecyZOux+7IZtzYS/iq/GjMouDlojc4VLafgoGXsnPnlxw+fJx2f2Tz6vf7MWkas2ffBEDpgcMUvfQSgwZPo6qqlo0bf48edJhmk4mKikqmTL2cq6+akHSMQWwFPotJkcTW4Y6nsa7OLTk54yXdNkyqa+pSpv/AgeMCThk46CopLz8m13z778VqGyUlJYfCZSZNvlnAIa4+E4K+I1vAJZAl0F+s6ZcImGThQ0tFROSWWx8UKJTs3IkC/aLKu8TYyDhk1679qQzvknjdE1nIPRhnHzF4YflruN0lLPjnpeTndQg8CVFS8jWTJn+bocNGcezoTgC+OXEKTSl0PbLWXrr0YR5/XOFyZaJplyEiKKXQNIXbfY66ukaOH2tg3LhLqKysYcvmTQwZejGjx4wg4B9nhNPgBvObb05z3/1zuOKK8V0NbxNQ3iE1gXWcjKexts4truwxUlA4McYvxOP48aNy5MgJERH58ssycThHSpZruOwvOSIiIqWl5TJk6LVic4yR8vJjIiJy+nSHQBaD3XtKxWwplLx+V4qILvfdv0RAybr176RiAZ0hTxLMjviEuYlqPrRoqYAms//xYdF1XZqavDFSXn5Mvvu39wjY5aOPtkl1dZ04ssYKFMj4y26WKVNvk+Ejr5Ohw6fJ4CHXSl6/K8Tj8cr7738mmqm/TJl6q3g8XhER0XU9LHX1DXLvTwznuerX66WqqlYgWyZOulm83mYJRJUNiYjI2bONUlNT3xkZGxKRISLE72UqgMLohKNHTzJ+wkxcWU6cDgdp6VaUpkWOY5Sips5N5akd/OCH8/n35T9n4qQbOddwhkGDR+NtbqLJ24xSCpNJIysrkyyng+LXn2fhQ0vZtmM3eXl96ZvTB7MleLImoDSFt6mZI1/vZPjIKRw5vJV5//QYr6xey8RJk7BYzbS0tMZYu8LYXB4/XsHGN1cwc+b0ZNOlAGMx1gHRPmRuPBlgeHhdFyrPVGFJt9He2gQx0d4PmJh/38+ZPu0qhg+/DEdmPtu2fUCWy4Gu6ygUSilOnDjNTTfdRY3VjtI00tPTINBMY6OH2qoqYvfwOuDn6qkzefe3RXz2x895ZfWzWG2jKTlQjr+ticQ4w9RrZnVGxnPJyABiLKSe8HFcLA4cOMzBsiM4HHZU1PGYILS1+cjp42L69Kv44osStm//E3Pm3EFubnbCDrds+RB/IMCs227kzJlq/vTn3TgcGcF2I/C1t2OxWPj+9wzFPvvjF5w4for8/NwYhxwNQTh39jw3/M1U+l3UN1GRdoyAkYzNMCF3A68lK/RXhJ/SxWY1RMh5wPmXGNH/IloAe1eFNOAJ/vrJAGNv1iWUiFwLWDEcQzoGi4FOaxnQg2XtxHpD36cnzk95u6xhfn+nldCKSRdIM4HNoiECrX6dNJN26J4Juc9n28wugLLaFv875eeet5qwaUphMSnSzcaRTcjD6ALnWv3MHpf7y8JMS/w4tShdwjoCbRgvPiVCUinXLYwrOsiBU54KnNbCDkeZ0f359Lqx+fa8ld8ZyOnzPu7+uOJSf4u/BHMwrkdf/UCQWwF3a/H86YV3/3rmoF4fe68T8taBBv7h3eNMyLfP00V+E7yrIaJZJEpZlOKk17emXZcfA7isppocqynPOEyILh/73OwPFFS3Bs6UzR1DYaalV8ef6s1dSggILPu8mmyHBYHVKE5FcqMVM3636zoFdsvc/jYL/W3mKdlWU55fJKpMNJHhNlY7zaYzntYAy7dX9ebwgV4mZHNZA/tqvAzJsIRuVBd3tA4V9ajQESwm9aJFU0t0xDgrjJlmKvavyFMBYIQrjV+V1VPR2N6bKvQeIa1+YdnOanIc1uh3ug6oBCK+QyRyQR7B/Sh1Q0eLiIe8LHBaRHCaNfDpLNte2VsqAL1IyKayBvZWexmUYYn/ZuJfOpaOuozucGOfCGGTWqyUsQ0IAKP62HjxoJvy+tYk9bqPXiOkaF8NGRlmAnTYQW5CqIraDRp/w1xEfIqht0rGyxtAQ3SCzaTAL7y8u7a31OgdQjZ/dZbtlc2MdFgBQ+doQfFUjF8ITxsVul8gXDEekSi4OD4rAIzITmPt4bOc8fSOL+kVQp7bUYXTbg4qRyJ5GYiEhHAojodE8kPfohhtvi4i3yQ6v3CaNc62tLN8e3VvqNJzQjaXNbCnxstwhzV80JsQIo8lnAsisdMompSg8xXFE+EoHCcBhBGuNFaW1XPsbFtP1ekZIe0B4dmd1WRlGFOlw1yJlddB1Ua+QkqCcF54HbJGCRUqOMviBYFMswl/cztbvmpI2myq6BEhWw6dZW+Vl2EdI0syLDT0jJouKirKxCxKQ2Gan3XVqF+EAa501pc10Nye4kiS4IIJ8evCf+yqwemwhA5nU5E3QJ2NbSku5CoVFYllLaj6LiwPlCI/3UxpbTNvH+yZlVwwIRtK3Xxe2cRIZxp6CgOOhBwWxMyZUKgNh9voiKMWpvSZTbBWvtPKsi+q8bSlsllPjAsmZNWeOlwOC/7kV6HJZD1CVawjSRh2XwdpSBa24kVHKMyw8FVNM+tK3Beq1oURUry/nt01XgaH1x2qW4JSjxgtSZTfiNndCvBwwrDSiQQELnKlUVRST1vgwnbx3SbErwsr99SRndGjbfd6UCeNn0FGws5VQGQNIu4U/VJYdBEG2CyUVnv5zZ4LW712m5D3Djeyt7rJ2NF2c8AxEj7Big7DwbfdybqjK9GB/Cwrq0vqabmAiNMtQgK6sHxXFTa7mQCpzu4kIlIMqtH40DZIjIG3CO2QLwA6QoHNwoGaZjaVdT/idIuQDaVutlV4GOVM6+p7rZQgIgsiy/jwDviBnjENugj5mVZe2FVNk697EadbhBTtq8XltBIIfjncC7IWpC7iUGU9CndPG9UVFNgNK9lQ2j0rSZmQdSVudlR6GeqwhlffvSGgHg2vxIRFvdWwX4S+WWkU7avtVsRJmZBVu2txZlhSup/oDkTkteC02Y5StSkv8FKQgXYLX9Y0U9SNiJPK/8uwZl89u+q8TMi1oyMJjy16BrkX4eveblVXimF90ikudVNe15JSnf8G35+PvTMIp/0AAAAASUVORK5CYII=" width="25"> or <i class="fa fa-check-circle text-success" style="color: #28a745;"></i> next to the account's name. Happy trading!</small>
-                    <div class="content">
-                        <button type="button" id="tradesReceived" class="btn btn-primary"><i class="fas fa-inbox label-icon"></i> Received</button>
-                        <button type="button" id="tradesSent" class="btn btn-primary"><i class="fas fa-location-arrow label-icon"></i> Sent</button>
-                    </div>
                     <div class="offers"></div>
                 </center>
             `);
+            $('.offers').html(`<i class="fas fa-spinner fa-spin"></i>`);
+            socket.emit('user offers');
         } else if(go == 'inventory') {
             view_trade = false;
             inventory = true;
@@ -739,6 +755,14 @@ $(function() {
             showFriendsToTrade();
             $('.sidenav').sidenav('close');
         }
+    });
+
+    $('body').on('click', '.logout', function() {
+        localStorage.removeItem('state');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        socket.emit('logout');
+        window.location.href = '/';
     });
 
     $('body').on('click', '.container .your_inventory .item', function() {
@@ -858,7 +882,7 @@ function showFriendsToTrade() {
     for(var h in friends) {
         $html += `
                 <div class="friend">
-                    <img src="` + friends[h].avatar + `">
+                    <img src="` + friends[h].avatar.split('.jpg')[0]+"_full.jpg" + `">
                     <span class="name">` + friends[h].name + `</span>
                     <button type="button" class="btn makeOfferFriend" data-trade="` + friends[h].trade_link + `"><i class="far fa-plus-square"></i>&nbsp;TRADE</button>
                 </div>

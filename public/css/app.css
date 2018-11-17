@@ -3,6 +3,20 @@ body {
     padding-bottom: 10px;
 }
 
+nav .nav-wrapper {
+    display: flex;
+    justify-content: space-between;
+}
+
+.logout {
+    margin: 0 18px;
+}
+
+.logout i {
+    height: 56px;
+    line-height: 56px;
+}
+
 .sidenav {
     background-color: #0d1e29;
 }
@@ -25,16 +39,11 @@ nav {
     line-height: 56px;
 }
 
-.brand-logo {
-    position: inherit;
-    padding: 5px;
-}
-
-.brand-logo img:nth-child(1) {
+.logo img:nth-child(1) {
     width: 80px;
 }
 
-.brand-logo img:nth-child(2) {
+.logo img:nth-child(2) {
     width: 250px;
 }
 
@@ -237,6 +246,49 @@ nav {
     text-align: center;
 }
 
+.case_opening .item {
+    background: #2a4a5f;
+    margin: 3px;
+    cursor: pointer;
+    position: relative;
+    vertical-align: top;
+    width: 67px;
+    display: inline-block;
+    height: 80px;
+    transition: .5s ease-in-out all;
+    overflow: hidden;
+    border-radius: 7px;
+}
+
+.case_opening .item .image img {
+    width: 100%;
+}
+
+.case_opening .item .amount {
+    position: absolute;
+    font-size: 16px;
+    margin-left: 2px;
+}
+
+.case_opening .item .name {
+    font-size: 8px;
+    line-height: .5;
+    text-align: center;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.case_opening .item .price {
+    position: inherit;
+    margin-top: -18px;
+    font-size: 8px;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    padding: 2px;
+    text-align: center;
+}
+
 .selected {
     background-color: #1b2a33 !important;
 }
@@ -247,29 +299,83 @@ nav {
 
 .offers {
     margin-top: 25px;
-    background-color: #32393e;
-    padding: 10px;
-    border-radius: 10px;
 }
 
 .offers .offer {
     margin-bottom: 15px;
+    background-color: #3a3a3a;
 }
 
-.offers .offer .sender_or_recipient img {
-    width: 33px;
-    border-radius: 50%;
-    margin-bottom: -10px;
+.offers .offer .row .s12 {
+    border-bottom: 1px solid black;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
 }
 
-.offers .offer .sender_or_recipient span button {
-    border-radius: 50%;
-    padding: 0 8px;
-    margin-left: 6px;
-    line-height: 45px;
+.offers .offer .row .s12 .user {
+    display: flex;
 }
 
+.offers .offer .row .s12 .user .name {
+    font-size: 16px;
+    float: left;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100px;
+}
 
+.offers .offer .row .s12 .user .ify {
+    margin-top: 2px;
+}
+
+.offers .offer .row .s12 .status {
+    font-size: 16px;
+    float: right;
+    font-weight: bold;
+}
+
+.offers .offer .row .give {
+    padding: 15px;
+    border-right: 1px solid black;
+    font-size: 15px;
+}
+
+.offers .offer .row .give .info1 {
+    float: left;
+    font-size: 12px;
+    line-height: 2;
+    margin-left: 3px;
+}
+
+.offers .offer .row .give .info2 {
+    float: right;
+}
+
+.offers .offer .row .give i {
+    margin-left: 3px;
+}
+
+.offers .offer .row .get {
+    padding: 15px;
+    font-size: 15px;
+}
+
+.offers .offer .row .get .info1 {
+    float: left;
+    font-size: 12px;
+    line-height: 2;
+}
+
+.offers .offer .row .get .info2 {
+    float: right;
+}
+
+.offers .offer .row .get i {
+    margin-left: 3px;
+}
 
 .see_inventory {
     width: 100%;
@@ -329,16 +435,11 @@ nav {
 
 
 @media(max-width: 700px) {
-    .brand-logo {
-        position: inherit !important;
-        margin-left: -5% !important;
-    }
-
-    .brand-logo img:nth-child(1) {
+    .logo img:nth-child(1) {
         width: 40px !important;
     }
 
-    .brand-logo img:nth-child(2) {
+    .logo img:nth-child(2) {
         width: 100px !important;
     }
 

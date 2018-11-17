@@ -55,7 +55,7 @@ app.get('/auth/login/user', passport.authenticate('custom', {
 });
 
 server.listen(80, function() {
-    console.log('Server is up an running!');
+    console.log(new Date() + ' Server is up an running!');
 });
 
 var users = {};
@@ -91,14 +91,12 @@ io.on('connection', function(socket) {
         });
     });
 
-    socket.on('user offers', function(type) {
+    socket.on('user offers', function() {
         if(!user) return;
-        if(type == "received" || type == "sent") {
-            getOffers(users[user], type, function(err, offers) {
-                if(err) return socket.emit('user eroare', 'An error occured while getting your ' + type + ' offers!');
-                socket.emit('user ' + type + ' offers', offers);
-            });
-        }
+        getOffers(users[user], function(err, offers) {
+            if(err) return socket.emit('user eroare', 'An error occured while getting your ' + type + ' offers!');
+            socket.emit('user offers', offers);
+        });
     });
 
     socket.on('user change game', function(appid, trade) {
@@ -139,7 +137,7 @@ io.on('connection', function(socket) {
 
             if(td.is_gift == true) tip = 'accepto';
 
-            socket.emit('user get trade', trade, td.sender, td.recipient, td.state, td.state_name, type, tip);
+            socket.emit('user get trade', trade, td.sender, td.recipient, td.state, td.state_name, td.is_case_opening, type, tip);
         });
     });
 
@@ -198,44 +196,11 @@ function getContentsTrade(user, link, cb) {
     }
 }
 
-function getOffers(user, type, cb) {
-    arequest(user, 'https://api-trade.opskins.com/ITrade/GetOffers/v1/?type=' + type, 'GET', {}, function(resp) {
+function getOffers(user, cb) {
+    arequest(user, 'https://api-trade.opskins.com/ITrade/GetOffers/v1/', 'GET', {}, function(resp) {
         if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
 
-        var offers = [];
-
-        for(var h in resp.response.offers) {
-            var itm = resp.response.offers[h];
-            if(type == "sent") {
-                offers.push({
-                    id: itm.id,
-                    recipient: {
-                        name: itm.recipient.display_name,
-                        avatar: itm.recipient.avatar,
-                        verified: itm.recipient.verified
-                    },
-                    your_items: itm.sender.items,
-                    his_items: itm.recipient.items,
-                    case_opening: itm.is_case_opening,
-                    state: itm.state
-                });
-            } else {
-                offers.push({
-                    id: itm.id,
-                    sender: {
-                        name: itm.sender.display_name,
-                        avatar: itm.sender.avatar,
-                        verified: itm.sender.verified
-                    },
-                    your_items: itm.recipient.items,
-                    his_items: itm.sender.items,
-                    case_opening: itm.is_case_opening,
-                    state: itm.state
-                });
-            }
-        }
-
-        cb(0, offers);
+        cb(0, resp.response.offers);
     });
 }
 
@@ -377,6 +342,7 @@ function new_tokens(state, rt, cb) {
         }, function(err, res, bodi) {
             if(err) throw err;
             var response = JSON.parse(bodi);
+            console.log(new Date());
             console.log(response);
             users[state].refresh_token = response.refresh_token;
             users[state].access_token = response.access_token;
@@ -446,6 +412,6 @@ function GetMyInventory(user, appid, cb) {
 }
 
 process.on('uncaughtException', function (err) {
-    console.log('[ERROR]');
+    console.log(new Date() + ' [ERROR]');
     console.log(err);
 });
