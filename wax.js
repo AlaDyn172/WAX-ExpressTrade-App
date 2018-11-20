@@ -101,7 +101,7 @@ io.on('connection', function(socket) {
 
     socket.on('user change game', function(appid, trade) {
         if(!user) return;
-        userChangeGame(users[user], appid, trade, function(err, items, myitems) {
+        userChangeGame(users[user], appid, trade, function(err, myitems, items) {
             if(err) return socket.emit('user eroare', 'An error ocurred whle getting both users inventory!');
             socket.emit('user change game', myitems, items, appid);
         });
@@ -198,7 +198,7 @@ function getContentsTrade(user, link, cb) {
 
 function getOffers(user, cb) {
     arequest(user, 'https://api-trade.opskins.com/ITrade/GetOffers/v1/', 'GET', {}, function(resp) {
-        if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
+        if(!resp.hasOwnProperty('response')) return cb(1, resp);
 
         cb(0, resp.response.offers);
     });
@@ -224,7 +224,7 @@ function userWithdrawToOPSkins(user, items, cb) {
     arequest(user, 'https://api-trade.opskins.com/IItem/WithdrawToOpskins/v1/', 'POST', {
         'item_id': items
     }, function(resp) {
-        if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
+        if(!resp.hasOwnProperty('response')) return cb(1, resp);
 
         cb(0);
     });
@@ -232,7 +232,7 @@ function userWithdrawToOPSkins(user, items, cb) {
 
 function userGetTradeInformations(user, trade, cb) {
     arequest(user, 'https://api-trade.opskins.com/ITrade/GetOffer/v1/?offer_id=' + trade, 'GET', {}, function(resp) {
-        if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
+        if(!resp.hasOwnProperty('response')) return cb(1, resp);
 
         cb(0, resp.response.offer);
     });
@@ -278,7 +278,7 @@ function SendOffer(user, _2fa, userid, token, to_be_sended, to_be_received, trad
         items_to_receive: to_be_received,
         message: trade_msg
     }, function(resp) {
-        if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
+        if(!resp.hasOwnProperty('response')) return cb(1, resp);
 
         if(resp.response.offer.state == 2) cb(0, 'Trade successfully sent to user ' + resp.response.offer.recipient.display_name);
         else cb(1, 'There was a problem while sending the trade offer!');
@@ -293,7 +293,7 @@ function SendOfferToSteamId(user, _2fa, userid, to_be_sended, to_be_received, tr
         items_to_receive: to_be_received,
         message: trade_msg
     }, function(resp) {
-        if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
+        if(!resp.hasOwnProperty('response')) return cb(1, resp);
 
         if(resp.response.offer.state == 2) cb(0, 'Trade successfully sent to user ' + resp.response.offer.recipient.display_name);
         else cb(1, 'There was a problem while sending the trade offer!');
@@ -318,7 +318,7 @@ function userSetTrade(user, type, tid, _2fa, cb) {
     }
 
     arequest(user, url, 'POST', json, function(resp) {
-        if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
+        if(!resp.hasOwnProperty('response')) return cb(1, resp);
 
         if(type == 'accept' && resp.response.offer.state == 3) cb(0);
         else if(type == 'decline' && ( resp.response.offer.state == 7 || resp.response.offer.state == 6)) cb(0);
@@ -326,7 +326,7 @@ function userSetTrade(user, type, tid, _2fa, cb) {
     });
 }
 
-function new_tokens(state, rt, cb) {
+function new_tokens(user, cb) {
     OpskinsAuth.getClientDetails((clientid, secret) => {
         request({
             headers: {
@@ -337,15 +337,15 @@ function new_tokens(state, rt, cb) {
             method: "POST",
             form: {
                 grant_type: 'refresh_token',
-                refresh_token: rt
+                refresh_token: user.refresh_token
             }
         }, function(err, res, bodi) {
             if(err) throw err;
             var response = JSON.parse(bodi);
             console.log(new Date());
             console.log(response);
-            users[state].refresh_token = response.refresh_token;
-            users[state].access_token = response.access_token;
+            users[user.state].refresh_token = response.refresh_token;
+            users[user.state].access_token = response.access_token;
             cb(response.access_token);
         });
     });
@@ -361,9 +361,11 @@ function arequest(user, url, method, body, cb) {
         form: body
     }, function(err, res, bodi) {
         if(err) throw err;
+        console.log(body);
         var response = JSON.parse(bodi);
+        console.log(response);
         if(response.error) {
-            new_tokens(user.state, user.refresh_token, function(atk) {
+            new_tokens(user.state, function(atk) {
                 request({
                     headers: {
                         'Authorization': 'Bearer ' + atk,
@@ -383,7 +385,7 @@ function arequest(user, url, method, body, cb) {
 
 function GetUserInventory(user, appid, userid, cb) {
     arequest(user, 'https://api-trade.opskins.com/ITrade/GetUserInventory/v1/?uid=' + userid + '&app_id=' + appid + '&page=1&per_page=500', 'GET', {}, function(resp) {
-        if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
+        if(!resp.hasOwnProperty('response')) return cb(1, resp);
 
         var utilizator = resp.response.user_data;
         var items = resp.response.items;
@@ -394,7 +396,7 @@ function GetUserInventory(user, appid, userid, cb) {
 
 function GetUserInventoryFromSteamId(user, appid, userid, cb) {
     arequest(user, 'https://api-trade.opskins.com/ITrade/GetUserInventoryFromSteamId/v1/?steam_id=' + userid + '&app_id=' + appid + '&page=1&per_page=500', 'GET', {}, function(resp) {
-        if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
+        if(!resp.hasOwnProperty('response')) return cb(1, resp);
 
         var utilizator = resp.response.user_data;
         var items = resp.response.items;
@@ -405,7 +407,7 @@ function GetUserInventoryFromSteamId(user, appid, userid, cb) {
 
 function GetMyInventory(user, appid, cb) {
     arequest(user, 'https://api-trade.opskins.com/IUser/GetInventory/v1/?app_id=' + appid + '&page=1&per_page=500', 'GET', {}, function(resp) {
-        if(resp.hasOwnProperty('message') && !resp.hasOwnProperty('response')) return cb(1, resp.message);
+        if(!resp.hasOwnProperty('response')) return cb(1, resp);
 
         cb(0, resp.response.items);
     });
