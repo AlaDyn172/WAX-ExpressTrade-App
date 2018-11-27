@@ -343,6 +343,7 @@ function new_tokens(user, cb) {
             if(err) throw err;
             var response = JSON.parse(bodi);
             console.log(new Date());
+            console.log(user);
             console.log(response);
             users[user.state].refresh_token = response.refresh_token;
             users[user.state].access_token = response.access_token;
