@@ -936,3 +936,5 @@ var getCookies = function(){
     }
     return cookies;
 }
+
+// SCRIPT MADE BY @ALADYN172 [TWITTER] - v1.8

@@ -400,3 +400,5 @@ process.on('uncaughtException', function (err) {
     console.log(new Date() + ' [ERROR]');
     console.log(err);
 });
+
+// SCRIPT MADE BY @ALADYN172 [TWITTER] - v1.8
