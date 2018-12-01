@@ -50,6 +50,7 @@ app.get('/auth/login/user', passport.authenticate('custom', {
 }), function (req, res) {
     states[req.query.state] = req.user;
     states[req.query.state].refresh_token = req.user.refresh_token;
+    states[req.query.state].expires = time()+1800;
 
     res.redirect('/?state=' + req.query.state + "&refresh_token=" + req.user.refresh_token + "&type=login");
 });
@@ -69,6 +70,8 @@ io.on('connection', function(socket) {
             users[state] = states[state];
             users[state].state = state;
             socket.emit('user info', users[state]);
+
+            if(states[state].expires-time() <= 0) new_tokens(users[state]);
         }
     });
 
@@ -326,7 +329,7 @@ function userSetTrade(user, type, tid, _2fa, cb) {
     });
 }
 
-function new_tokens(user, cb) {
+function new_tokens(user) {
     OpskinsAuth.getClientDetails((clientid, secret) => {
         request({
             headers: {
@@ -342,12 +345,8 @@ function new_tokens(user, cb) {
         }, function(err, res, bodi) {
             if(err) throw err;
             var response = JSON.parse(bodi);
-            console.log(new Date());
-            console.log(user);
-            console.log(response);
-            users[user.state].refresh_token = response.refresh_token;
+            users[user.state].expires = time()+1800;
             users[user.state].access_token = response.access_token;
-            cb(response.access_token);
         });
     });
 }
@@ -362,25 +361,8 @@ function arequest(user, url, method, body, cb) {
         form: body
     }, function(err, res, bodi) {
         if(err) throw err;
-        console.log(body);
         var response = JSON.parse(bodi);
-        console.log(response);
-        if(response.error) {
-            new_tokens(user.state, function(atk) {
-                request({
-                    headers: {
-                        'Authorization': 'Bearer ' + atk,
-                    },
-                    uri: url,
-                    method: method,
-                    form: body
-                }, function(err, res, bodi) {
-                    if(err) throw err;
-                    var response = JSON.parse(bodi);
-                    cb(response);
-                });
-            });
-        } else cb(response);
+        cb(response);
     });
 }
 

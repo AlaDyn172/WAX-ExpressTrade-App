@@ -30,6 +30,20 @@ $(function() {
         </center>
     `);
 
+    var $gamechanges = "";
+
+    $.ajax({
+        url: "https://api-trade.opskins.com/ITrade/GetApps/v1/",
+        method: 'GET',
+        success: function(data) {
+            var resp = data;
+            for(var i in resp.response.apps) {
+                var itm = resp.response.apps[i];
+                $gamechanges += `<li><a class="gameChange"><img data-appid="` + itm.internal_app_id + `" src="` + itm.img + `">&nbsp;` + itm.name + `</a></li>`;
+            }
+        }
+    });
+
     if(socket == null) {
         socket = io.connect();
     
@@ -157,18 +171,7 @@ $(function() {
                     <small id="your_inv_text">Your inventory ($` + parseFloat(my_value/100).toFixed(2) + `)</small>
                     <div class="your_inventory">` + Iteme01 + `</div>
                     <a class='dropdown-trigger btn' href='#gamePicker' data-target='gamePicker'><img src="https://opskins.com/images/games/logo-small-vgo.jpg">&nbsp;<i class="fas fa-angle-down"></i></a>
-                    <ul id='gamePicker' class='dropdown-content dropdownul'>
-                        <li><a class="gameChange"><img data-appid="1" src="https://opskins.com/images/games/logo-small-vgo.jpg">&nbsp;VGO</a></li>
-                        <li><a class="gameChange"><img data-appid="12" src="https://opskins.com/images/games/logo-small-stickers.jpg">&nbsp;WAX Stickers</a></li>
-
-                        <li><a class="gameChange"><img data-appid="7" src="https://opskins.com/images/games/logo-small-cryptokitties.png">&nbsp;CryptoKitties</a></li>
-                        <li><a class="gameChange"><img data-appid="8" src="https://opskins.com/images/games/logo-small-etherbots.png">&nbsp;EtherBots</a></li>
-                        <li><a class="gameChange"><img data-appid="9" src="https://opskins.com/images/games/logo-small-fishbank.png">&nbsp;FishBank</a></li>
-                        <li><a class="gameChange"><img data-appid="11" src="https://opskins.com/images/games/logo-small-cryptobarons.png">&nbsp;CryptoBarons</a></li>
-
-                        <li><a class="gameChange"><img data-appid="13" src="https://opskins.com/images/games/logo-small-giftcards.jpg">&nbsp;Gift Cards</a></li>
-                        <li><a class="gameChange"><img data-appid="14" src="https://opskins.com/images/games/digital_art_badge.png">&nbsp;WAX Digital Art</a></li>
-                    </ul>
+                    <ul id='gamePicker' class='dropdown-content dropdownul'>` + $gamechanges + `</ul>
                     <small id="his_inv_text">His inventory ($` + parseFloat(his_value/100).toFixed(2) + `)</small>
                     <div class="his_inventory">` + Iteme02 + `</div>
                     <div class="input-field col s6">
@@ -715,18 +718,7 @@ $(function() {
                     <h5>Here you can see all your items from WAX ExpressTrade Inventory</h5>
                     <small id="your_inv_total_value">Inventory total value: $0.00</small>
                     <a class='dropdown-trigger btn' href='#gamePicker' data-target='gamePicker'><img src="https://opskins.com/images/games/logo-small-vgo.jpg">&nbsp;<i class="fas fa-angle-down"></i></a>
-                    <ul id='gamePicker' class='dropdown-content dropdownul2'>
-                        <li><a class="gameChange"><img data-appid="1" src="https://opskins.com/images/games/logo-small-vgo.jpg">&nbsp;VGO</a></li>
-                        <li><a class="gameChange"><img data-appid="12" src="https://opskins.com/images/games/logo-small-stickers.jpg">&nbsp;WAX Stickers</a></li>
-
-                        <li><a class="gameChange"><img data-appid="7" src="https://opskins.com/images/games/logo-small-cryptokitties.png">&nbsp;CryptoKitties</a></li>
-                        <li><a class="gameChange"><img data-appid="8" src="https://opskins.com/images/games/logo-small-etherbots.png">&nbsp;EtherBots</a></li>
-                        <li><a class="gameChange"><img data-appid="9" src="https://opskins.com/images/games/logo-small-fishbank.png">&nbsp;FishBank</a></li>
-                        <li><a class="gameChange"><img data-appid="11" src="https://opskins.com/images/games/logo-small-cryptobarons.png">&nbsp;CryptoBarons</a></li>
-
-                        <li><a class="gameChange"><img data-appid="13" src="https://opskins.com/images/games/logo-small-giftcards.jpg">&nbsp;Gift Cards</a></li>
-                        <li><a class="gameChange"><img data-appid="14" src="https://opskins.com/images/games/digital_art_badge.png">&nbsp;WAX Digital Art</a></li>
-                    </ul>
+                    <ul id='gamePicker' class='dropdown-content dropdownul2'>` + $gamechanges + `</ul>
                     <div class="see_inventory"><i style=" margin: 75px auto auto auto; " class="fas fa-spinner fa-spin"></i></div>
                     <div style="margin-top: 20px;">
                         <button id="withdrawto_opskins" type="button" class="btn">Withdraw item(s) to OPSkins</button>
